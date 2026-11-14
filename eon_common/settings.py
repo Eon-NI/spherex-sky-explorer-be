@@ -16,6 +16,14 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "development-only-insecure-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "false").lower() == "true"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 ROOT_URLCONF = "eon_common.urls"
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {},
+    }
+]
 INSTALLED_APPS = [
     "django.contrib.auth", "django.contrib.contenttypes", "rest_framework",
     "drf_spectacular", SERVICE_APPS[SERVICE_NAME],
