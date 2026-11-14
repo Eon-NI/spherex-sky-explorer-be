@@ -15,6 +15,8 @@ Keep `domain` free of Django, Astropy, Astroquery, Celery, boto3 and HTTP client
 
 Scientific values retain their original units and provenance. SIA2 defaults to QR3 then DR1; deep collections are included in scheduled sync. Search cache entries store product IDs, not FITS, and a durable PostgreSQL generation invalidates Redis keys when metadata changes. SIA2 `radius_deg` is a circular search radius, while TAP uses a point containment predicate and `size_deg` for a square cutout. `time_bounds_lower` orders observations; FITS `DATE` is header metadata and is not substituted for observation time. `WCS-WAVE` is position dependent; do not assign one constant wavelength to an IMAGE. FLAGS bit names are returned as raw header labels, without guessed meaning. Official QR3/DR1 collections supersede QR2.
 
+The Observation SIA adapter uses direct GET requests to IRSA's `/SIA` with one `COLLECTION` per request, matching the verified local `SPHERExProofOfConcept/spherex_poc/archive.py`. It validates VOTable `QUERY_STATUS` and time units. The direct request avoids `/SIA/capabilities` discovery; keep TAP as a separate adapter. A prior live PoC result is evidence for that PoC run, not proof that IRSA is reachable in the current environment.
+
 ## Development
 
 Copy `.env.example` to `.env`, set secrets, then `docker compose up --build -d` and run migrations for Observation and Image Processing. The MinIO setup service creates the bucket. API schema and docs are at `/api/v1/schema/` and `/api/v1/docs/` per service. Run `pytest -q` for unit tests and `EON_RUN_LIVE_IRSA=1 pytest -q tests/integration -m integration` for live network tests. See `docs/IRSA_INTEGRATION.md` and `docs/BACKEND_WORKFLOW.md`.
