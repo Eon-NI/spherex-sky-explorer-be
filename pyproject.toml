@@ -23,6 +23,7 @@ include = ["eon_common*", "services*"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "eon_common.settings"
 python_files = ["test_*.py"]
+markers = ["integration: live IRSA and S3 integration tests"]
 
 [tool.ruff]
 line-length = 100

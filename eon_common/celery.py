@@ -4,4 +4,6 @@ from celery import Celery
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "eon_common.settings")
 app = Celery("eon")
 app.config_from_object("django.conf:settings", namespace="CELERY")
-app.autodiscover_tasks(["services.observation.infrastructure"])
+service = os.getenv("SERVICE_NAME", "observation")
+if service in {"observation", "image_processing"}:
+    app.autodiscover_tasks([f"services.{service}.infrastructure"])

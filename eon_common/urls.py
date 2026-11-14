@@ -15,3 +15,8 @@ urlpatterns = [
 ]
 if settings.SERVICE_NAME == "observation":
     urlpatterns.append(path("api/v1/", include("services.observation.presentation.urls")))
+
+elif settings.SERVICE_NAME == "image_processing":
+    urlpatterns.append(path("api/v1/", include("services.image_processing.presentation.urls")))
+elif settings.SERVICE_NAME == "jobs":
+    urlpatterns.append(path("api/v1/", include("services.jobs.presentation.urls")))

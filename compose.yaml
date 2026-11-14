@@ -37,6 +37,13 @@ services:
       - '9001:9001'
     volumes:
       - miniodata:/data
+  minio_setup:
+    image: minio/mc:latest
+    env_file: .env
+    entrypoint: /bin/sh
+    command: -c 'until mc alias set local http://minio:9000 "$$S3_ACCESS_KEY" "$$S3_SECRET_KEY"; do sleep 2; done; mc mb --ignore-existing "local/$$S3_BUCKET"'
+    depends_on:
+      - minio
   observation:
     <<: *app
     environment:
@@ -65,7 +72,19 @@ services:
     <<: *app
     environment:
       SERVICE_NAME: observation
-    command: celery -A eon_common.celery worker --loglevel=INFO
+    command: celery -A eon_common.celery worker --concurrency=1 --loglevel=INFO
+  image_worker:
+    <<: *app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio_setup:
+        condition: service_completed_successfully
+    environment:
+      SERVICE_NAME: image_processing
+    command: celery -A eon_common.celery worker -Q image_processing --concurrency=2 --loglevel=INFO
   observation_beat:
     <<: *app
     environment:

@@ -42,7 +42,7 @@ CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 CELERY_BEAT_SCHEDULE = {
     "sync-irsa": {
         "task": "services.observation.infrastructure.tasks.sync_irsa",
-        "schedule": 3600.0,
+        "schedule": 86400.0,
     }
 } if SERVICE_NAME == "observation" else {}
 LOGGING = {
@@ -51,4 +51,23 @@ LOGGING = {
     "formatters": {"json": {"()": "pythonjsonlogger.json.JsonFormatter", "format": "%(asctime)s %(levelname)s %(name)s %(message)s"}},
     "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "json"}},
     "root": {"handlers": ["console"], "level": os.getenv("LOG_LEVEL", "INFO")},
+}
+
+EON_TAP_MAX_RESULTS = int(os.getenv("EON_TAP_MAX_RESULTS", "100"))
+EON_MAX_CUTOUT_BYTES = int(os.getenv("EON_MAX_CUTOUT_BYTES", str(128 * 1024 * 1024)))
+EON_INTERNAL_TOKEN = os.getenv("EON_INTERNAL_TOKEN", "")
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 300
+
+CELERY_RESULT_EXPIRES = 7 * 24 * 3600
+
+EON_OBSERVATION_CACHE_TTL_SECONDS = int(os.getenv("EON_OBSERVATION_CACHE_TTL_SECONDS", "21600"))
+
+EON_MAX_FOV_DEG = float(os.getenv("EON_MAX_FOV_DEG", "2"))
+EON_MAX_CUTOUT_DEG = float(os.getenv("EON_MAX_CUTOUT_DEG", "1"))
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.redis.RedisCache",
+                      "LOCATION": CELERY_BROKER_URL}}
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+    "sia_search": "30/min", "tap_search": "10/min", "cutout_submit": "10/min",
+    "metadata_read": "60/min", "job_status": "120/min", "fits_stream": "30/min",
 }

@@ -1,7 +1,8 @@
-"""S3/MinIO object-store adapter, ready for future FITS processing."""
+"""S3/MinIO storage; FITS bytes move through files, never task payloads."""
 import os
-import uuid
+from pathlib import Path
 import boto3
+from botocore.exceptions import ClientError
 from services.image_processing.domain.models import ImageReference
 
 
@@ -14,10 +15,22 @@ class S3ScientificObjectStore:
             aws_secret_access_key=os.environ.get("S3_SECRET_KEY"),
         )
 
-    def read(self, reference: ImageReference) -> bytes:
-        return self.client.get_object(Bucket=self.bucket, Key=reference.object_key)["Body"].read()
+    def exists(self, reference: ImageReference) -> bool:
+        try:
+            self.client.head_object(Bucket=self.bucket, Key=reference.object_key)
+            return True
+        except ClientError as exc:
+            if exc.response.get("Error", {}).get("Code") in {"404", "NoSuchKey", "NotFound"}:
+                return False
+            raise
 
-    def write(self, data: bytes, content_type: str) -> ImageReference:
-        key = f"science/{uuid.uuid4()}"
-        self.client.put_object(Bucket=self.bucket, Key=key, Body=data, ContentType=content_type)
-        return ImageReference(key, content_type)
+    def upload_file(self, path: Path, reference: ImageReference) -> None:
+        self.client.upload_file(str(path), self.bucket, reference.object_key,
+                                ExtraArgs={"ContentType": reference.content_type})
+
+    def download_file(self, reference: ImageReference, path: Path) -> None:
+        self.client.download_file(self.bucket, reference.object_key, str(path))
+
+    def open_stream(self, reference: ImageReference):
+        response = self.client.get_object(Bucket=self.bucket, Key=reference.object_key)
+        return response["Body"], response.get("ContentLength")

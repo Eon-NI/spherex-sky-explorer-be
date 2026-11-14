@@ -38,4 +38,4 @@ def test_irsa_adapter_uses_documented_sia_query():
     with patch("services.observation.infrastructure.irsa.Irsa.query_sia", return_value=rows) as query:
         result = IrsaSiaCatalog().search(SkySearch(1, 2, 1 / 3600))
     assert result[0].publisher_did == "did"
-    assert query.call_args.kwargs["collection"] == ["spherex_dr1", "spherex_qr3"]
+    assert query.call_args.kwargs["collection"] == ["spherex_qr3", "spherex_dr1"]
