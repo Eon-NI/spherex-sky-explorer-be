@@ -1,13 +1,15 @@
 """Opt-in network tests; run with EON_RUN_LIVE_IRSA=1 pytest tests/integration -m integration."""
 import os
 from pathlib import Path
+
 import pytest
+
+from services.image_processing.domain.security import validate_cutout_url
+from services.image_processing.infrastructure.downloader import IrsaCutoutDownloader
+from services.image_processing.infrastructure.fits_reader import AstropyFitsReader
 from services.observation.domain.models import SkySearch, TemporalSearch
 from services.observation.infrastructure.irsa import IrsaSiaCatalog
 from services.observation.infrastructure.tap import IrsaTapCatalog
-from services.image_processing.infrastructure.downloader import IrsaCutoutDownloader
-from services.image_processing.infrastructure.fits_reader import AstropyFitsReader
-from services.image_processing.domain.security import validate_cutout_url
 
 pytestmark = [pytest.mark.integration,
               pytest.mark.skipif(os.getenv("EON_RUN_LIVE_IRSA") != "1", reason="Live IRSA opt-in")]
@@ -35,3 +37,18 @@ def test_tap_cutout_fits_and_wcs(tmp_path: Path):
     assert metadata.pixel_position_xy is not None
     assert metadata.wavelength_um is not None
     assert metadata.bandwidth_um is not None
+
+
+def test_tap_mvp_metadata_only():
+    """BE-01 live integration: five metadata references, no FITS download/storage."""
+    from services.image_processing.domain.models import SourceProduct
+    from services.observation.presentation.views import TemporalObservationSerializer
+    query = TemporalSearch(210.80227, 54.34895, 0.1, "SPHEREx-D2", limit=5)
+    results = IrsaTapCatalog().search(query)
+    assert 0 < len(results) <= 5
+    assert len({item.product_id for item in results}) == len(results)
+    assert results == sorted(results, key=lambda item: (item.time_bounds_lower, item.artifact_uri, item.product_id))
+    for item in results:
+        payload = dict(TemporalObservationSerializer(item).data)
+        assert SourceProduct(**payload).product_id == item.product_id
+        validate_cutout_url(item.cutout_url, item.artifact_uri, query.ra_deg, query.dec_deg, query.size_deg)

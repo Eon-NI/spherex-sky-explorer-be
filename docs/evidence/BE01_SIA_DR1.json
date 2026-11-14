@@ -1,0 +1,31 @@
+{
+  "checked_at_utc": "2026-11-14T23:49:20.870992+00:00",
+  "kind": "live adapter integration; metadata only; no Django DB/FITS/S3",
+  "query": {
+    "ra_deg": 304.693508808,
+    "dec_deg": 42.4436872991,
+    "radius_deg": 0.0002777778,
+    "collections": [
+      "spherex_dr1"
+    ]
+  },
+  "success": true,
+  "count": 330,
+  "sample": {
+    "publisher_did": "ivo://irsa.ipac/spherex_dr1?2025W18_1B_0074_2/D1",
+    "collection": "spherex_dr1",
+    "access_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W18_1B/l2b-v27-2026-196/1/level2_2025W18_1B_0074_2D1_spx_l2b-v27-2026-196.fits",
+    "ra_deg": 303.877716814435,
+    "dec_deg": 40.54668985260471,
+    "obs_id": "2025W18_1B_0074_2",
+    "access_format": "image/fits",
+    "s_region": "POLYGON ICRS 306.6680925414942 39.437107340082925 302.44199864102563 38.31293175331314 300.97879533463123 41.61213230423966 305.4325534236303 42.80130313517084 306.6680925414942 39.437107340082925",
+    "energy_bandpassname": "SPHEREx-D1",
+    "t_min_mjd": 60794.01699,
+    "t_max_mjd": 60794.018322,
+    "em_min_m": 7.455e-07,
+    "em_max_m": 1.1167e-06,
+    "missing_fields": [],
+    "processing_version": "l2b-v27-2026-196"
+  }
+}
