@@ -31,7 +31,7 @@ for service in observation image_processing spectral jobs; do
 done
 ```
 
-Búsqueda SIA2:
+Búsqueda SIA2 (GET directo a `/SIA`, verificado en el PoC local; sin descubrimiento de `/SIA/capabilities`):
 
 ```bash
 curl 'http://localhost:8001/api/v1/observations/search/?ra_deg=304.693508808&dec_deg=42.4436872991&radius_deg=0.0002777778'
