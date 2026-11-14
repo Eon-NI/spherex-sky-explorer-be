@@ -43,6 +43,8 @@ La búsqueda exacta consulta primero Redis/PostgreSQL durante `EON_OBSERVATION_C
 
 Cada proceso expone `/health/`, `/api/v1/schema/` (OpenAPI) y `/api/v1/docs/` (Swagger). MinIO está en `localhost:9000` y su consola en `localhost:9001`; Compose crea el bucket `S3_BUCKET` mediante `minio_setup`.
 
+El health check de Django está en **`/health/`**, no en `/api/v1/health/`. Un 404 de `/favicon.ico` sólo indica que no hay icono configurado. La URL `/SIA` del PoC pertenece al servicio externo de IRSA; en EON se consulta desde el adaptador de Observation mediante `GET /api/v1/observations/search/`.
+
 ## Desarrollo y pruebas
 
 ```bash
@@ -57,6 +59,8 @@ SERVICE_NAME=observation python manage.py check
 Las pruebas unitarias sustituyen las llamadas externas. Las pruebas de integración real se activan con `EON_RUN_LIVE_IRSA=1 pytest -q tests/integration -m integration`; descargan un cutout a un directorio temporal. La búsqueda sola no descarga FITS.
 
 ## Estado de verificación
+
+Verificación local posterior (14 de noviembre de 2026): `docker compose exec observation python manage.py migrate --noinput` terminó sin migraciones pendientes; `/health/`, `/api/v1/docs/` y una búsqueda SIA2 en `/api/v1/observations/search/` respondieron HTTP 200 en el puerto 8001. La búsqueda M101 (`ra_deg=210.80227`, `dec_deg=54.34895`, `radius_deg=0.0002777778`, `collections=spherex_dr1`) devolvió 246 registros reales en ese momento. `pytest -q -p no:cacheprovider tests/test_observation.py tests/test_sync.py tests/test_search_cache.py tests/test_tap_cutout.py` pasó con 22 pruebas en el contenedor. El conteo publicado puede cambiar.
 
 Verificación en el entorno de inicialización (14 de noviembre de 2026): `python3 -m compileall -q eon_common services tests` pasó; una prueba directa de dominio y casos de uso pasó; `docker compose config --quiet` pasó con `.env.example` copiado temporalmente a `.env`. `python3 -m pytest -q` no pudo ejecutarse porque `pytest` no está instalado y el índice de paquetes no resolvió DNS. Una consulta directa al endpoint SIA2 documentado de IRSA respondió `QUERY_STATUS=OK`, 51 campos y 414 filas para `COLLECTION=spherex_dr1&POS=circle+127.69444+-39.17760+0.01`; los cinco campos usados por el adaptador estaban presentes. Esta comprobación valida el servicio remoto y su esquema, pero no equivale a una prueba del proceso Django.
 
