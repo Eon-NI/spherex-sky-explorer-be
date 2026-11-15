@@ -1,0 +1,7 @@
+{
+  "url": "http://127.0.0.1:8001/api/v1/observations/temporal/?ra_deg=210.80227&dec_deg=54.34895&size_deg=0.1&detector=SPHEREx-D2&limit=5",
+  "status_code": 502,
+  "response": {
+    "detail": "IRSA TAP query unavailable"
+  }
+}

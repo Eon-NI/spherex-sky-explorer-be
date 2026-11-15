@@ -1,0 +1,37 @@
+{
+  "mismatched_region": {
+    "http_status": 502,
+    "response": {
+      "detail": "Job service unavailable"
+    },
+    "expected": 400,
+    "note": "Cannot enqueue: valid product with deliberately mismatched region."
+  },
+  "unknown_job": {
+    "http_status": 502,
+    "response": {
+      "detail": "Job service unavailable"
+    }
+  },
+  "invalid_cutout": {
+    "http_status": 400,
+    "response": {
+      "detail": "Invalid cutout_id"
+    }
+  },
+  "jobs_no_auth": {
+    "http_status": 401,
+    "response": {
+      "detail": "Unauthorized"
+    },
+    "note": "Empty payload deliberately invalid; cannot enqueue a task."
+  },
+  "jobs_existing_token": {
+    "http_status": 401,
+    "response": {
+      "detail": "Unauthorized"
+    },
+    "note": "Empty payload deliberately invalid; cannot enqueue a task.",
+    "nonempty_token_available": true
+  }
+}

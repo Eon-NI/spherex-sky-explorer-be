@@ -16,3 +16,4 @@ class Job:
     result_key: str | None = None
     error: str | None = None
     result: dict[str, object] | None = None
+    progress: int | None = None

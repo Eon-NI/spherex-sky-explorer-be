@@ -1,0 +1,76 @@
+{
+  "checked_at_utc": "2026-11-15T09:11:11.917409+00:00",
+  "eon_mvp_end_to_end_passed": true,
+  "backend_branch": "feature/eon-mvp-integration",
+  "frontend_branch": "feature/eon-mvp-integration",
+  "spectral_initial": {
+    "channels_http": 200,
+    "channels": 102,
+    "cube_submission_http": 502,
+    "cors_8080": "not granted",
+    "full_passed": false
+  },
+  "spectral_final": {
+    "browser_passed": true,
+    "spectrum": {
+      "point_count": 102,
+      "blank_channels": [
+        50,
+        51
+      ],
+      "product_id": "ivo://IPAC/P/SPHEREx/DR1/cube",
+      "unit": "MJy/sr"
+    },
+    "backend_science_unchanged": true,
+    "frontend_components_and_client_unchanged": true
+  },
+  "features": {
+    "search": {
+      "passed": true,
+      "evidence": "browser-search.json"
+    },
+    "blink": {
+      "passed": true,
+      "evidence": "browser-blink.json"
+    },
+    "timelapse": {
+      "passed": true,
+      "evidence": "browser-timelapse.json"
+    }
+  },
+  "artifact_audit": "artifact_audit.json",
+  "http": {
+    "8080": 200,
+    "8001": 200,
+    "8002": 200,
+    "8003": 200,
+    "8004": 200,
+    "19000": 200
+  },
+  "tests": {
+    "backend_linux": {
+      "passed": 171,
+      "skipped": 6
+    },
+    "backend_focused": 24,
+    "backend_smoke": 5,
+    "frontend_contract": 5,
+    "frontend_tsc_vite": "passed",
+    "jobs_django_openapi": "passed",
+    "ruff": "passed"
+  },
+  "limits": [
+    "Verified D2/M101 and one Spectral DR1 tile; no external calibrated astrometry/photometry or visible-motion claim.",
+    "Discovery is bounded to 100 chronological catalogue references, date filtered in frontend; current M101 count was 84.",
+    "Native TAP not verified; real discovery used SIA2 fallback.",
+    "Existing Windows Spectral fcntl portability limitation remains; full suite tested on Linux.",
+    "Vite large-chunk warning remains; no unrelated performance refactor."
+  ],
+  "safety": {
+    "env_files_changed": false,
+    "scientific_algorithms_changed": false,
+    "persistent_volumes_or_data_deleted": false,
+    "commit_push_merge": false,
+    "other_repositories_accessed": false
+  }
+}

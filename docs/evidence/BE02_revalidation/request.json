@@ -1,0 +1,14 @@
+{
+  "job_id": "be02-validation-ca6ec81c827e476fb23ac9cef0e1cbc2",
+  "product_ids": [
+    "803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03",
+    "115e1d2d1b532a5f4c059b634afd4f1e6139b01955a312cac18fac708f8abec9",
+    "c8513c4d408cd9d1ab1173137b40b3733199bbbd9c6e241c45ce6a59997c557c",
+    "845a21a4c04280bb0121f45fe24a2d520b374273e12201328ef518b4c573ca34",
+    "7bff6a092300bac0e55dda0aba0f257038963465075bcb081e889a2fd6405caf"
+  ],
+  "ra_deg": 210.80227,
+  "dec_deg": 54.34895,
+  "size_deg": 0.1,
+  "detector": "SPHEREx-D2"
+}

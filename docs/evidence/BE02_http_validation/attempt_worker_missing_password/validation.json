@@ -1,0 +1,96 @@
+{
+  "checked_at_utc": "2026-11-15T03:48:15.028253+00:00",
+  "http_cutout_flow_passed": false,
+  "native_tap_verified": false,
+  "stages": {
+    "postgresql": {
+      "status": "Passed",
+      "database": "eon_image_processing",
+      "query": "SELECT 1"
+    },
+    "redis": {
+      "status": "Passed",
+      "endpoint": "127.0.0.1:6379/0"
+    },
+    "observation_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "image_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "jobs_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "minio_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "s3_bucket": {
+      "status": "Passed",
+      "bucket": "eon-science"
+    },
+    "celery_worker": {
+      "status": "Passed",
+      "workers": [
+        "eon-image-local@DESKTOP-E2NPNTE"
+      ],
+      "queue": "image_processing",
+      "task": "eon.image_processing.create_cutout"
+    },
+    "openapi": {
+      "status": "Passed",
+      "http_status": 200,
+      "version": "3.0.3"
+    },
+    "discovery": {
+      "status": "Passed",
+      "http_status": 200,
+      "url": "http://127.0.0.1:8001/api/v1/observations/temporal/?ra_deg=210.80227&dec_deg=54.34895&size_deg=0.1&detector=SPHEREx-D2&limit=1",
+      "product_id": "803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03"
+    },
+    "product_detail": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "submission": {
+      "status": "Passed",
+      "http_status": 202,
+      "job_id": "14dafacd-da86-447f-81a4-0353a06e759f",
+      "status_url": "/api/v1/cutouts/jobs/14dafacd-da86-447f-81a4-0353a06e759f/"
+    },
+    "async_execution": {
+      "status": "Failed",
+      "error_type": "AssertionError"
+    },
+    "metadata": {
+      "status": "Blocked",
+      "reason": "Prerequisite failed"
+    },
+    "fits_download": {
+      "status": "Blocked",
+      "reason": "Prerequisite failed"
+    },
+    "scientific_validation": {
+      "status": "Blocked",
+      "reason": "Prerequisite failed"
+    },
+    "minio_retrieval": {
+      "status": "Blocked",
+      "reason": "Prerequisite failed"
+    },
+    "schema_comparison": {
+      "status": "Blocked",
+      "reason": "Prerequisite failed"
+    }
+  },
+  "poll_timeout_seconds": 240,
+  "notes": [
+    "No services started/restarted; at most one POST, no submission retry.",
+    "Fresh BE-01 HTTP request; cache/upstream discovery route is not exposed.",
+    "Separate from application timelapse and BE-03 frontend validation."
+  ],
+  "failed_stage": "async_execution"
+}

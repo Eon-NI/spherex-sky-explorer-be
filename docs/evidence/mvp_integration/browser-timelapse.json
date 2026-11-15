@@ -1,0 +1,60 @@
+{
+  "phase": "timelapse",
+  "passed": true,
+  "requests": [
+    {
+      "url": "http://localhost:8001/api/v1/observations/temporal/?ra_deg=210.80227&dec_deg=54.34895&size_deg=0.1&detector=SPHEREx-D2&limit=100",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/",
+      "status": 204,
+      "type": "text/html"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/",
+      "status": 202,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/1/",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/0/",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/3/",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/2/",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/4/",
+      "status": 200,
+      "type": "image/png"
+    }
+  ],
+  "body": "Volver a Inicio\nES\nEN\n\nM\u00d3DULO \u00b7 TIMELAPSE\n\nEl cielo a trav\u00e9s del tiempo\n10 may 2025 UTC\nD2\n1 / 5\nExploratory: wavelength varies by exposure/position; brightness changes are not proof of variability. FLAGS labels retained, bitmap not interpreted; no quality-mask calibration.\n10 may 2025 UTC\n24 jun 2026 UTC\n\nIngresa la ascensi\u00f3n recta, la declinaci\u00f3n y el campo de visi\u00f3n.\n\nRA\nRight Ascension (\u00b0)\nDEC\nDeclination (\u00b0)\nFOV\n\u00b0\n\u2032\nField of view\nBANDA\nD1\nD2\nD3\nD4\nD5\nD6\nDetector\nFECHA INICIO\n5\nFECHA FINAL\n1.0\u00d7\nBuscar regi\u00f3n\nGracias por explorar el cielo con LOOK-EON.\n\nVuelve al inicio para conocer m\u00e1s sobre la misi\u00f3n SPHEREx, el Planeta X y el equipo detr\u00e1s del proyecto.\n\nRegresar al inicio\nObservatorio\nTimelapse\nB\u00fasqueda por coordenadas\nAn\u00e1lisis espectral\n\nEON \u00a9 2026. Proyecto de exploraci\u00f3n astron\u00f3mica.",
+  "canvas_sha256": "2347d294a5e34915dc15404e3f9f9be5033e427fd3d8aebd0f0d5a9011fdc14f",
+  "playback_hashes": [
+    "3a2f093e049675570b5fb471ad8fcaf61127c702f6f62aa9149716adbe43ddf2",
+    "3333c4ea0c2fa022ed258ad27cfe8705f1129335051abf1151e0795296e256e3",
+    "97451e67c2520bcba68cfb57051651b0b72234ab55eb324399d6c009d922edd2",
+    "749d72aa4a5bdcd0be7121bf3966643d0f00dfc93bf326ede0d7fd5859fd70c3",
+    "38ebc38e13fc5a07205c4eac130b0576c3f181a75dcbac96e17323958fa117a7"
+  ]
+}

@@ -1,8 +1,11 @@
 """S3/MinIO storage; FITS bytes move through files, never task payloads."""
 import os
 from pathlib import Path
+
 import boto3
+from botocore.config import Config
 from botocore.exceptions import ClientError
+
 from services.image_processing.domain.models import ImageReference
 
 
@@ -13,6 +16,8 @@ class S3ScientificObjectStore:
             "s3", endpoint_url=os.environ.get("S3_ENDPOINT_URL"),
             aws_access_key_id=os.environ.get("S3_ACCESS_KEY"),
             aws_secret_access_key=os.environ.get("S3_SECRET_KEY"),
+            config=Config(connect_timeout=5, read_timeout=30, retries={"max_attempts": 2},
+                          s3={"addressing_style": "path"}),
         )
 
     def exists(self, reference: ImageReference) -> bool:

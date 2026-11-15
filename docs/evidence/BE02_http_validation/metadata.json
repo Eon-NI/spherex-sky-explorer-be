@@ -1,0 +1,63 @@
+{
+  "cutout_id": "65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d",
+  "object_key": "cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d.fits",
+  "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W19_2B/l2b-v27-2026-198/2/level2_2025W19_2B_0346_1D2_spx_l2b-v27-2026-198.fits?center=210.80227%2C54.34895d&size=0.1",
+  "time_bounds_lower": 60805.711548,
+  "fits": {
+    "version": "7.0.5",
+    "image_shape": [
+      59,
+      59
+    ],
+    "image_unit": "MJy / sr",
+    "detector": "2",
+    "obs_id": "2025W19_2B_0346_1",
+    "header_date": "2026-07-17T20:24:35.536",
+    "psf_fwhm": 7.46070125580342,
+    "image_statistics": {
+      "finite_pixels": 3481,
+      "min": 0.3157563805580139,
+      "max": 17.089197158813477,
+      "mean": 1.104586413111436
+    },
+    "flags_available": true,
+    "flags_shape": [
+      59,
+      59
+    ],
+    "flags_header_names": {
+      "MSKN0000": "TRANSIENT",
+      "MSKN0001": "OVERFLOW",
+      "MSKN0002": "SUR_ERROR",
+      "MSKN0006": "NONFUNC",
+      "MSKN0007": "DICHROIC",
+      "MSKN0009": "MISSING_DATA",
+      "MSKN0010": "HOT",
+      "MSKN0011": "COLD",
+      "MSKN0012": "FULLSAMPLE",
+      "MSKN0014": "PHANMISS",
+      "MSKN0015": "NONLINEAR",
+      "MSKN0017": "PERSIST",
+      "MSKN0019": "OUTLIER",
+      "MSKN0020": "CROSSTALK",
+      "MSKN0021": "SOURCE",
+      "MSKN0022": "GHOST",
+      "MSKN0023": "GHOST_FPA",
+      "MSKN0024": "GHOST_EXT",
+      "MSKN0025": "STREAK",
+      "MSKN0026": "BLOOM",
+      "MSKN0027": "SNOWBALL",
+      "MSKN0028": "HALO"
+    },
+    "sky_position_deg": [
+      210.80226999928283,
+      54.34894999983927
+    ],
+    "pixel_position_xy": [
+      28.921068568063372,
+      29.498343663134925
+    ],
+    "wavelength_um": 1.5064212841578182,
+    "bandwidth_um": 0.036952739361587945
+  }
+}

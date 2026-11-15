@@ -1,0 +1,151 @@
+{
+  "checked_at": "2026-11-15T10:10:08.463994+00:00",
+  "real_multi_region_passed": false,
+  "regions": [
+    {
+      "region": "M101",
+      "ra_deg": 210.80227,
+      "dec_deg": 54.34895,
+      "collections": {
+        "spherex_qr3": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3&POS=CIRCLE+210.80227+54.34895+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_qr3_deep": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3_deep&POS=CIRCLE+210.80227+54.34895+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_dr1": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=CIRCLE+210.80227+54.34895+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_dr1_deep": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1_deep&POS=CIRCLE+210.80227+54.34895+0&RESPONSEFORMAT=VOTABLE"
+        }
+      },
+      "public_http": {
+        "status": 502,
+        "body": {
+          "detail": "IRSA TAP query unavailable"
+        }
+      }
+    },
+    {
+      "region": "SIA reference",
+      "ra_deg": 304.693508808,
+      "dec_deg": 42.4436872991,
+      "collections": {
+        "spherex_qr3": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3&POS=CIRCLE+304.693508808+42.4436872991+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_qr3_deep": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3_deep&POS=CIRCLE+304.693508808+42.4436872991+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_dr1": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=CIRCLE+304.693508808+42.4436872991+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_dr1_deep": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1_deep&POS=CIRCLE+304.693508808+42.4436872991+0&RESPONSEFORMAT=VOTABLE"
+        }
+      },
+      "public_http": {
+        "status": 502,
+        "body": {
+          "detail": "IRSA TAP query unavailable"
+        }
+      }
+    },
+    {
+      "region": "ICRS north pole",
+      "ra_deg": 0,
+      "dec_deg": 90,
+      "collections": {
+        "spherex_qr3": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3&POS=CIRCLE+0+90+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_qr3_deep": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_qr3_deep&POS=CIRCLE+0+90+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_dr1": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=CIRCLE+0+90+0&RESPONSEFORMAT=VOTABLE"
+        },
+        "spherex_dr1_deep": {
+          "exception": "HTTPError",
+          "http_status": 502,
+          "error": "502 Server Error: Proxy Error for url: https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1_deep&POS=CIRCLE+0+90+0&RESPONSEFORMAT=VOTABLE"
+        }
+      },
+      "public_http": {
+        "status": 502,
+        "body": {
+          "detail": "IRSA TAP query unavailable"
+        }
+      }
+    }
+  ],
+  "invalid_inputs": [
+    {
+      "change": {
+        "ra_deg": 360
+      },
+      "status": 400,
+      "body": {
+        "ra_deg": [
+          "Must be in [0, 360)."
+        ]
+      }
+    },
+    {
+      "change": {
+        "dec_deg": 91
+      },
+      "status": 400,
+      "body": {
+        "dec_deg": [
+          "Ensure this value is less than or equal to 90."
+        ]
+      }
+    },
+    {
+      "change": {
+        "size_deg": 0
+      },
+      "status": 400,
+      "body": {
+        "size_deg": [
+          "Ensure this value is greater than or equal to 1e-06."
+        ]
+      }
+    }
+  ],
+  "regression": {
+    "windows_compatible": {
+      "passed": 170,
+      "deselected_live_tests": 6,
+      "excluded": "tests/test_spectral_contract.py requires Linux fcntl"
+    },
+    "stdlib_smoke_passed": 5,
+    "linux_attempt": "Existing Observation image has no pytest installed",
+    "initial_focused_attempt": "86 passed, 1 temporary-directory permission error; subsequent isolated-basetemp run passed"
+  },
+  "deployment": "Running Observation was not restarted; live responses use the previous error wording. Corrected wording and structured log tested through DRF APIClient."
+}

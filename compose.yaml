@@ -8,6 +8,13 @@ x-app: &app
       condition: service_started
   restart: unless-stopped
 
+x-container-env: &container_env
+  POSTGRES_HOST: postgres
+  REDIS_URL: redis://redis:6379/0
+  S3_ENDPOINT_URL: http://minio:9000
+  OBSERVATION_SERVICE_URL: http://observation:8000
+  JOB_SERVICE_URL: http://jobs:8000
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -16,7 +23,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
       POSTGRES_DB: eon_observation
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-eon}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-eon_observation}"]
       interval: 5s
       retries: 10
     volumes:
@@ -26,51 +33,90 @@ services:
     image: redis:7-alpine
     volumes:
       - redisdata:/data
+  minio_volume_init:
+    # Community-maintained build; UID/GID verified for this pinned release.
+    image: &minio_image alpine/minio:RELEASE.2025-10-15T17-29-55Z
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        owner="$$(id -u minio):$$(id -g minio)"
+        if [ "$$(stat -c '%u:%g' /data)" != "$$owner" ]; then
+          if [ -n "$$(ls -A /data)" ]; then
+            echo 'Refusing ownership changes to nonempty MinIO data; migrate permissions explicitly.' >&2
+            exit 1
+          fi
+          chown "$$owner" /data
+        fi
+    volumes:
+      - miniodata:/data
+    restart: "no"
   minio:
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    image: *minio_image
+    user: "100:101"
     command: server /data --console-address ':9001'
     environment:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY:-eon}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?set S3_SECRET_KEY}
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '${MINIO_API_PORT:-9000}:9000'
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'
     volumes:
       - miniodata:/data
-  minio_setup:
-    image: minio/mc:latest
-    env_file: .env
-    entrypoint: /bin/sh
-    command: -c 'until mc alias set local http://minio:9000 "$$S3_ACCESS_KEY" "$$S3_SECRET_KEY"; do sleep 2; done; mc mb --ignore-existing "local/$$S3_BUCKET"'
     depends_on:
-      - minio
+      minio_volume_init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "3", "-O", "/dev/null", "http://127.0.0.1:9000/minio/health/ready"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 5s
+  minio_setup:
+    build: .
+    entrypoint: ["python", "/app/docker/init_s3.py"]
+    command: []
+    environment:
+      S3_ENDPOINT_URL: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-eon}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?set S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET:?set S3_BUCKET}
+    depends_on:
+      minio:
+        condition: service_healthy
+    restart: "no"
   observation:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: observation
     ports:
       - '8001:8000'
   image_processing:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: image_processing
     ports:
       - '8002:8000'
   spectral:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: spectral
     ports:
       - '8003:8000'
   jobs:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: jobs
     ports:
       - '8004:8000'
   observation_worker:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: observation
     command: celery -A eon_common.celery worker --concurrency=1 --loglevel=INFO
   image_worker:
@@ -83,15 +129,33 @@ services:
       minio_setup:
         condition: service_completed_successfully
     environment:
+      <<: *container_env
       SERVICE_NAME: image_processing
     command: celery -A eon_common.celery worker -Q image_processing --concurrency=2 --loglevel=INFO
+  spectral_worker:
+    <<: *app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio_setup:
+        condition: service_completed_successfully
+    environment:
+      <<: *container_env
+      SERVICE_NAME: spectral
+    command: celery -A eon_common.celery worker -Q spectral --pool=prefork --concurrency=2 --loglevel=INFO
   observation_beat:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: observation
-    command: celery -A eon_common.celery beat --loglevel=INFO
+    command: celery -A eon_common.celery beat --loglevel=INFO --schedule=/home/eon/beat/celerybeat-schedule
+    volumes:
+      - beatdata:/home/eon/beat
 
 volumes:
   pgdata:
   redisdata:
   miniodata:
+  beatdata:

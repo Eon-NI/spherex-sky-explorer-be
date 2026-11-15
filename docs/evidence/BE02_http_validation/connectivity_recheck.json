@@ -1,0 +1,16 @@
+{
+  "observation": {
+    "http_status": 200
+  },
+  "image_processing": {
+    "error_type": "ConnectionError",
+    "connection_refused": true,
+    "http_response_received": false
+  },
+  "jobs": {
+    "http_status": 200
+  },
+  "minio": {
+    "http_status": 200
+  }
+}

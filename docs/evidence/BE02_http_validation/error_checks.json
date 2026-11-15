@@ -1,0 +1,77 @@
+{
+  "missing_fields": {
+    "http_status": 400,
+    "expected": 400,
+    "response": {
+      "product_id": [
+        "This field is required."
+      ],
+      "ra_deg": [
+        "This field is required."
+      ],
+      "dec_deg": [
+        "This field is required."
+      ],
+      "size_deg": [
+        "This field is required."
+      ]
+    },
+    "passed": true
+  },
+  "mismatched_region": {
+    "http_status": 400,
+    "expected": 400,
+    "response": {
+      "detail": "Cutout parameters differ from TAP search"
+    },
+    "passed": true
+  },
+  "unknown_job": {
+    "http_status": 404,
+    "expected": 404,
+    "response": {
+      "detail": "Job not found"
+    },
+    "passed": true
+  },
+  "invalid_cutout": {
+    "http_status": 400,
+    "expected": 400,
+    "response": {
+      "detail": "Invalid cutout_id"
+    },
+    "passed": true
+  },
+  "unknown_cutout": {
+    "http_status": 404,
+    "expected": 404,
+    "response": {
+      "detail": "Cutout not found"
+    },
+    "passed": true
+  },
+  "jobs_no_auth": {
+    "http_status": 401,
+    "expected": 401,
+    "response": {
+      "detail": "Unauthorized"
+    },
+    "passed": true
+  },
+  "jobs_matching_token": {
+    "http_status": 400,
+    "expected": 400,
+    "response": {
+      "task": [
+        "This field is required."
+      ],
+      "idempotency_key": [
+        "This field is required."
+      ],
+      "payload": [
+        "This field is required."
+      ]
+    },
+    "passed": true
+  }
+}

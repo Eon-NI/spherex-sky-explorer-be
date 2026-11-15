@@ -43,7 +43,7 @@ class SmokeTests(unittest.TestCase):
     def test_tap_builds_bounded_documented_adql(self):
         # The adapter only needs Irsa when executing; stub it to test pure ADQL construction.
         irsa = types.ModuleType("astroquery.ipac.irsa")
-        irsa.Irsa = object()
+        irsa.IrsaClass = object
         irsa.conf = types.SimpleNamespace(timeout=60)
         old = {name: sys.modules.get(name) for name in ("astroquery", "astroquery.ipac", "astroquery.ipac.irsa")}
         sys.modules["astroquery"] = types.ModuleType("astroquery")

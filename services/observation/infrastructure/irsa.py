@@ -1,18 +1,19 @@
 """Direct IRSA SIA2 adapter; avoids optional VO capabilities discovery."""
-from io import BytesIO
 import logging
 import os
 import re
+import xml.etree.ElementTree as ET
+from io import BytesIO
+from math import isfinite
 from time import perf_counter
 from urllib.parse import urlsplit
-import xml.etree.ElementTree as ET
 
-from astropy import units as u
-from astropy.io.votable import parse
 import numpy as np
 import requests
+from astropy import units as u
+from astropy.io.votable import parse
 
-from services.observation.domain.models import Observation, SkySearch
+from services.observation.domain.models import Observation, SkySearch, TemporalSearch
 
 logger = logging.getLogger(__name__)
 SIA_URL = "https://irsa.ipac.caltech.edu/SIA"
@@ -41,7 +42,12 @@ def _text(row: object, name: str) -> str | None:
 
 def _number(row: object, name: str) -> float | None:
     value = _value(row, name)
-    return None if value is None else float(value)
+    if value is None:
+        return None
+    number = float(value)
+    if not isfinite(number):
+        raise ValueError(f"Non-finite IRSA metadata: {name}")
+    return number
 
 
 def _read_votable(content: bytes):
@@ -63,15 +69,17 @@ def _read_votable(content: bytes):
     return table
 
 
-def _get_collection(collection: str, query: SkySearch):
+def _get_collection(collection: str, query: SkySearch | TemporalSearch, *, session=None, radius_deg=None):
     timeout = max(1, min(int(os.getenv("IRSA_TIMEOUT_SECONDS", "60")), 120))
+    radius = query.radius_deg if radius_deg is None else radius_deg
     params = {
         "COLLECTION": collection,
-        "POS": f"CIRCLE {query.ra_deg:.12g} {query.dec_deg:.12g} {query.radius_deg:.12g}",
+        "POS": f"CIRCLE {query.ra_deg:.12g} {query.dec_deg:.12g} {radius:.12g}",
         "RESPONSEFORMAT": "VOTABLE",
     }
     # The endpoint and all query keys are fixed; user input has passed SkySearch validation.
-    with requests.get(SIA_URL, params=params, timeout=(15, timeout), stream=True,
+    get = requests.get if session is None else session.get
+    with get(SIA_URL, params=params, timeout=(15, timeout), stream=True,
                       allow_redirects=False) as response:
         response.raise_for_status()
         if response.is_redirect:
