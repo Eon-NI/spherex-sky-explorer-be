@@ -5,6 +5,7 @@ COPY pyproject.toml ./
 COPY eon_common ./eon_common
 COPY services ./services
 COPY manage.py ./
+COPY docker/init_s3.py ./docker/init_s3.py
 RUN pip install --no-cache-dir .
 RUN useradd --create-home eon
 USER eon

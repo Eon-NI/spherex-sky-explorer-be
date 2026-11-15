@@ -59,8 +59,11 @@ For the hackathon MinIO uses an independent container with image
 alpine/minio:RELEASE.2025-10-15T17-29-55Z. Native Windows Django uses
 S3_ENDPOINT_URL=http://127.0.0.1:9000. No adapter depends on that image specifically.
 See BE02_MVP.md for bucket setup, validation results and Docker commands.
-compose.yaml was not changed; its historical storage topology is not the selected
-independent-container setup. Do not assume the development service is running.
+The optional Compose MinIO setup uses the same pinned community image with a
+non-root server, guarded empty-volume initialization and a bounded boto3 bucket
+initializer. See [Compose MinIO setup](docs/COMPOSE_MINIO.md). The independent
+container and Compose server must use different host ports; do not assume either
+service is running.
 
 ## Observation examples
 
@@ -106,7 +109,7 @@ publisher DIDs and writes changed/new metadata only. A durable PostgreSQL genera
 invalidates SIA2/TAP query snapshots. This is regional coverage, not a complete
 spatial index or full-sky synchronization; full-sky work needs partitioning/quotas.
 
-## Historical Docker topology
+## Optional Docker Compose topology
 
 These retained commands describe the repository's Compose topology, not the
 hackathon's independent MinIO setup. S3_ENDPOINT_URL must be adapted when Django
@@ -121,8 +124,11 @@ for service in observation image_processing spectral jobs; do
 done
 ```
 
-The historical Compose exposes MinIO on localhost:9000 and console :9001 and uses
-minio_setup to create S3_BUCKET. BE-02 does not modify or invoke this topology.
+Compose defaults to MinIO host ports 9000/9001; override MINIO_API_PORT and
+MINIO_CONSOLE_PORT when the independent container is running. minio_setup uses
+project boto3 dependencies to initialize S3_BUCKET. Container clients use
+S3_ENDPOINT_URL=http://minio:9000; host clients use the published port. See
+[permission strategy and isolated verification](docs/COMPOSE_MINIO.md).
 
 ## Development and verification
 

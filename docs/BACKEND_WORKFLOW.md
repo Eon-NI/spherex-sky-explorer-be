@@ -114,3 +114,13 @@ MinIO is an independent development container; native Windows uses
 S3_ENDPOINT_URL=http://127.0.0.1:9000. No FITS bytes travel in JSON/Celery, and no
 Observation or Jobs database is accessed by this processing path. See
 [BE02_MVP.md](BE02_MVP.md) for request/schema, limits, startup and verified evidence.
+
+
+## Optional Compose storage
+
+For the Compose alternative to the independent local MinIO container, see
+[Compose MinIO setup](COMPOSE_MINIO.md). It uses a pinned community server image,
+non-root storage, guarded empty-volume ownership setup and a bounded boto3 bucket
+initializer. Internal clients keep `http://minio:9000`; Windows host clients use
+the published host port. Isolated storage validation does not start or replace
+the existing independent PostgreSQL, Redis or MinIO containers.
