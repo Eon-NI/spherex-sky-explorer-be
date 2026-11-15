@@ -1,16 +1,17 @@
 """Direct IRSA SIA2 adapter; avoids optional VO capabilities discovery."""
-from io import BytesIO
 import logging
 import os
 import re
+import xml.etree.ElementTree as ET
+from io import BytesIO
+from math import isfinite
 from time import perf_counter
 from urllib.parse import urlsplit
-import xml.etree.ElementTree as ET
 
-from astropy import units as u
-from astropy.io.votable import parse
 import numpy as np
 import requests
+from astropy import units as u
+from astropy.io.votable import parse
 
 from services.observation.domain.models import Observation, SkySearch
 
@@ -41,7 +42,12 @@ def _text(row: object, name: str) -> str | None:
 
 def _number(row: object, name: str) -> float | None:
     value = _value(row, name)
-    return None if value is None else float(value)
+    if value is None:
+        return None
+    number = float(value)
+    if not isfinite(number):
+        raise ValueError(f"Non-finite IRSA metadata: {name}")
+    return number
 
 
 def _read_votable(content: bytes):

@@ -1,5 +1,13 @@
 # IRSA integration and scientific constraints
 
+## MVP del hackathon
+
+V?ase [BE01_MVP.md](BE01_MVP.md) para contratos, errores, pruebas y l?mites actuales.
+TAP usa una Session Requests propia con timeout efectivo de conexi?n/lectura y no
+modifica el singleton global Astroquery. El product_id sigue asociado a la consulta.
+El JSON exitoso se conserva; par?metros no soportados se rechazan con 400.
+Redis indisponible en rate limiting devuelve 503 antes de IRSA; no habilita acceso ilimitado.
+
 ## Sources
 
 The [SPHEREx tutorial index](https://caltech-ipac.github.io/irsa-tutorials/spherex/), [SIA2/FITS tutorial](https://caltech-ipac.github.io/irsa-tutorials/spherex-intro/), [TAP/cutout tutorial](https://caltech-ipac.github.io/irsa-tutorials/spherex-cutouts/), and [IRSA API guide](https://caltech-ipac.github.io/spherex-archive-documentation/spherex-data-access/) define the queries and products used here.
@@ -36,16 +44,16 @@ Spatial coordinates use `WCS(image.header).celestial` and Astropy sky/pixel tran
 ## Known limits
 
 - The public search API accepts a circle; there is no rectangular FOV search endpoint yet. TAP verifies that its point is inside each product, and the cutout service uses `size_deg` for the returned square.
-- The SIA2 adapter does not persist every optional ObsCore field during the scheduled regional sync; it returns them in live search responses.
+- The repository persists the modeled optional ObsCore fields; it is not a full ObsCore mirror. Products are deduplicated by publisher DID before search persistence/cache and sync.
 - TAP depends on IRSA availability and may fail or time out. A 502 indicates upstream failure; an empty successful result has `count: 0`.
 - The download cap defaults to 128 MiB, which may reject large cutouts. FITS statistics scan the selected IMAGE once; matrices are never returned in JSON. A separate rate-limited endpoint streams `application/fits` from S3 for viewers.
 - Celery result and idempotency keys expire after seven days. S3 objects and cutout provenance remain until explicitly removed.
 
 ## On-demand cache and daily synchronization
 
-The SIA2 endpoint accepts either `radius_deg` or `fov_deg`, never both. `fov_deg` is the diameter of the **circular** SIA2 region and is divided by two before the documented `query_sia` call. A rectangular sky window would require a separate, explicitly defined geometry and is not implied by the current API. TAP uses point-in-polygon containment and `size_deg` for the returned cutout square; this is not a rectangular catalog search.
+The SIA2 endpoint accepts either `radius_deg` or `fov_deg`, never both. `fov_deg` is the diameter of the **circular** SIA2 region and is divided by two before the direct HTTP SIA request. A rectangular sky window would require a separate, explicitly defined geometry and is not implied by the current API. TAP uses point-in-polygon containment and `size_deg` for the returned cutout square; this is not a rectangular catalog search.
 
-For an exact SIA2 or TAP query, Redis is the hot key store and PostgreSQL holds an ID-only query snapshot. Observation rows hold source values, optional-field markers and processing version parsed from the documented `level2/[planning period]/[processing version]/[detector]/...fits` path. The snapshot expires after `EON_OBSERVATION_CACHE_TTL_SECONDS` (default 21,600 seconds). Query results are rehydrated from Observation's own tables. Redis failure falls back to PostgreSQL; an expired/missing snapshot causes a new IRSA request.
+For an exact SIA2 or TAP query, Redis is the hot key store and PostgreSQL holds an ID-only query snapshot. Observation rows hold source values, optional-field markers and processing version parsed from the documented `level2/[planning period]/[processing version]/[detector]/...fits` path. The snapshot expires after `EON_OBSERVATION_CACHE_TTL_SECONDS` (default 21,600 seconds). Query results are rehydrated from Observation's own tables. Redis query-cache failure falls back to PostgreSQL (rate-limiter failure independently returns 503); an expired/missing snapshot causes a new IRSA request.
 
 Celery Beat schedules `sync_irsa` every 86,400 seconds. It uses a Redis lock to avoid concurrent runs, and queries all four current spectral-image collections in each configured region. A bulk comparison on `obs_publisher_did` writes only new or changed metadata. When changes occur, a PostgreSQL catalog-generation counter advances and query snapshots are cleared; Redis keys from the old generation expire naturally. This invalidates both SIA2 and TAP cache entries without scanning Redis. The sync does not download cutouts. Region selection is explicit because scanning the full sky would require a separate archive-friendly partition plan.
 

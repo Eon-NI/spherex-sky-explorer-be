@@ -1,10 +1,12 @@
 from pathlib import Path
 from unittest.mock import patch
+
 import pytest
-from services.observation.domain.models import SkySearch, TemporalSearch
-from services.observation.infrastructure.tap import IrsaTapCatalog
+
 from services.image_processing.domain.models import CutoutRequest
 from services.image_processing.domain.security import validate_cutout_url
+from services.observation.domain.models import SkySearch, TemporalSearch
+from services.observation.infrastructure.tap import IrsaTapCatalog
 
 
 def test_tap_adql_and_chronological_normalization():
@@ -14,9 +16,9 @@ def test_tap_adql_and_chronological_normalization():
         def to_table(self):
             return [{"uri": url, "artifact_uri": "ibe/data/spherex/dr1/level2/x/a.fits",
                      "time_bounds_lower": 60002.0},
-                    {"uri": url, "artifact_uri": "ibe/data/spherex/dr1/level2/x/b.fits",
+                    {"uri": url.replace("a.fits", "b.fits"), "artifact_uri": "ibe/data/spherex/dr1/level2/x/b.fits",
                      "time_bounds_lower": 60001.0}]
-    with patch("services.observation.infrastructure.tap.Irsa.query_tap", return_value=Result()) as run:
+    with patch("services.observation.infrastructure.tap.IrsaClass.query_tap", return_value=Result()) as run:
         results = IrsaTapCatalog().search(query)
     adql = run.call_args.args[0]
     assert "SELECT TOP 3" in adql
@@ -59,6 +61,7 @@ def test_fits_reader_spatial_wcs_and_missing_flags(tmp_path: Path):
     import numpy as np
     from astropy.io import fits
     from astropy.wcs import WCS
+
     from services.image_processing.infrastructure.fits_reader import AstropyFitsReader
     wcs = WCS(naxis=2)
     wcs.wcs.crpix = [2, 2]
@@ -83,8 +86,7 @@ def test_tap_empty_and_external_error_are_distinct():
     class Empty:
         def to_table(self):
             return []
-    with patch("services.observation.infrastructure.tap.Irsa.query_tap", return_value=Empty()):
+    with patch("services.observation.infrastructure.tap.IrsaClass.query_tap", return_value=Empty()):
         assert IrsaTapCatalog().search(query) == []
-    with patch("services.observation.infrastructure.tap.Irsa.query_tap", side_effect=TimeoutError):
-        with pytest.raises(RuntimeError, match="unavailable"):
-            IrsaTapCatalog().search(query)
+    with patch('services.observation.infrastructure.tap.IrsaClass.query_tap', side_effect=TimeoutError), pytest.raises(RuntimeError, match='unavailable'):
+        IrsaTapCatalog().search(query)
