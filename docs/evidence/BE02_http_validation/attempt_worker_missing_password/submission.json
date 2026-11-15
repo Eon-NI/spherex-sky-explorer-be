@@ -1,0 +1,7 @@
+{
+  "http_status": 202,
+  "response": {
+    "job_id": "14dafacd-da86-447f-81a4-0353a06e759f",
+    "status_url": "/api/v1/cutouts/jobs/14dafacd-da86-447f-81a4-0353a06e759f/"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "owned_processes": [
+    {
+      "name": "image_api",
+      "pid": 3540,
+      "command": [
+        "manage.py",
+        "runserver",
+        "127.0.0.1:8002",
+        "--noreload"
+      ]
+    }
+  ],
+  "existing_services_restarted": [],
+  "configuration_scope": "child process environment only",
+  "existing_eligible_workers": [
+    "eon-image-local@DESKTOP-E2NPNTE"
+  ],
+  "validation_exit_code": 1,
+  "cleanup": [
+    {
+      "name": "image_api",
+      "pid": 3540,
+      "stopped": true
+    }
+  ],
+  "log_summaries": {
+    "image_api": [
+      "[14/Nov/2026 21:48:07] \"GET /health/ HTTP/1.1\" 200 47",
+      "[14/Nov/2026 21:48:15] \"GET /health/ HTTP/1.1\" 200 47",
+      "[14/Nov/2026 21:48:26] \"GET /api/v1/schema/ HTTP/1.1\" 200 6944",
+      "[14/Nov/2026 21:48:32] \"POST /api/v1/cutouts/ HTTP/1.1\" 202 123",
+      "[14/Nov/2026 21:48:32] \"GET /api/v1/cutouts/jobs/14dafacd-da86-447f-81a4-0353a06e759f/ HTTP/1.1\" 200 108",
+      "[14/Nov/2026 21:48:35] \"GET /api/v1/cutouts/jobs/14dafacd-da86-447f-81a4-0353a06e759f/ HTTP/1.1\" 200 122"
+    ]
+  }
+}

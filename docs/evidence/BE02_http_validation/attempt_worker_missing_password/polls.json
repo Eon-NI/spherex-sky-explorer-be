@@ -1,0 +1,22 @@
+[
+  {
+    "http_status": 200,
+    "response": {
+      "id": "14dafacd-da86-447f-81a4-0353a06e759f",
+      "state": "running",
+      "result_key": null,
+      "error": null,
+      "result": null
+    }
+  },
+  {
+    "http_status": 200,
+    "response": {
+      "id": "14dafacd-da86-447f-81a4-0353a06e759f",
+      "state": "failed",
+      "result_key": null,
+      "error": "Processing failed",
+      "result": null
+    }
+  }
+]

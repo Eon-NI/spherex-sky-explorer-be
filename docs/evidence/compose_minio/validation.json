@@ -1,0 +1,108 @@
+{
+  "checked_at_utc": "2026-11-15T04:39:15.820160+00:00",
+  "project": "eon-minio-check-90641896",
+  "passed": true,
+  "stages": {
+    "preflight": "Passed: existing service identities recorded, test ports available",
+    "compose_config": "Passed",
+    "nonempty_volume_guard": "Passed: wrong-owner nonempty volume refused; sentinel and ownership unchanged",
+    "build_and_start": "Passed",
+    "initializer": "Passed: one-shot exit 0 and bucket ready",
+    "nonroot_volume": "Passed: server UID 100/GID 101; /data writable and health=healthy",
+    "health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "s3_roundtrip": "Passed: head bucket, put/get byte equality, delete, empty bucket",
+    "idempotent_initializer": "Passed: existing bucket accepted without replacement"
+  },
+  "volumes_deleted": false,
+  "existing_containers_before": {
+    "eon-postgres-local": {
+      "id": "a45c27a9d50e6f7167b2d46eb2433a05689c7cc3c7599ef2b0f9155ff99f8fc3",
+      "started_at": "2026-11-14T22:24:43.851941637Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "eon-pg-local",
+          "Destination": "/var/lib/postgresql/data"
+        }
+      ]
+    },
+    "eon-redis-local": {
+      "id": "03cf15bf116061e978791194ba628a247b23b44e997c99765cf0d0ed5eb3d5db",
+      "started_at": "2026-11-14T22:59:54.959089872Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "eon-redis-data",
+          "Destination": "/data"
+        }
+      ]
+    },
+    "eon-minio-local": {
+      "id": "0628aebeaf79a51faf8d1ce766aa4e093601541b52e9c27ea4fae22aca30b85d",
+      "started_at": "2026-11-15T01:02:46.986785609Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "eon-minio-data",
+          "Destination": "/data"
+        }
+      ]
+    }
+  },
+  "test_volume": "eon-minio-check-90641896_miniodata",
+  "image": "alpine/minio:RELEASE.2025-10-15T17-29-55Z",
+  "isolated_containers_network_removed": true,
+  "existing_containers_after": {
+    "eon-postgres-local": {
+      "id": "a45c27a9d50e6f7167b2d46eb2433a05689c7cc3c7599ef2b0f9155ff99f8fc3",
+      "started_at": "2026-11-14T22:24:43.851941637Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "eon-pg-local",
+          "Destination": "/var/lib/postgresql/data"
+        }
+      ]
+    },
+    "eon-redis-local": {
+      "id": "03cf15bf116061e978791194ba628a247b23b44e997c99765cf0d0ed5eb3d5db",
+      "started_at": "2026-11-14T22:59:54.959089872Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "eon-redis-data",
+          "Destination": "/data"
+        }
+      ]
+    },
+    "eon-minio-local": {
+      "id": "0628aebeaf79a51faf8d1ce766aa4e093601541b52e9c27ea4fae22aca30b85d",
+      "started_at": "2026-11-15T01:02:46.986785609Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "eon-minio-data",
+          "Destination": "/data"
+        }
+      ]
+    }
+  },
+  "existing_containers_unchanged": true,
+  "automated_checks": {
+    "focused_initializer_tests": 7,
+    "full_suite_passed": 149,
+    "full_suite_skipped": 6,
+    "ruff": "Passed",
+    "compose_config": "Passed",
+    "git_diff_check": "Passed"
+  }
+}

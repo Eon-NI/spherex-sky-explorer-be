@@ -1,0 +1,474 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EON image_processing API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/cutouts/": {
+      "post": {
+        "operationId": "cutouts_create",
+        "tags": [
+          "cutouts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CutoutRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CutoutRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CutoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "basicAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CutoutJob"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/cutouts/{cutout_id}/fits/": {
+      "get": {
+        "operationId": "cutouts_fits_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cutout_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "cutouts"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "basicAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/fits": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/cutouts/{cutout_id}/metadata/": {
+      "get": {
+        "operationId": "cutouts_metadata_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cutout_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "cutouts"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "basicAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FitsMetadata"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/cutouts/jobs/{job_id}/": {
+      "get": {
+        "operationId": "cutouts_jobs_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "cutouts"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "basicAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CutoutJobStatus"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/schema/": {
+      "get": {
+        "operationId": "schema_retrieve",
+        "description": "OpenApi3 schema for this API. Format can be selected via content negotiation.\n\n- YAML: application/vnd.oai.openapi\n- JSON: application/vnd.oai.openapi+json",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "format",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "yaml"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "lang",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "af",
+                "ar",
+                "ar-dz",
+                "ast",
+                "az",
+                "be",
+                "bg",
+                "bn",
+                "br",
+                "bs",
+                "ca",
+                "ckb",
+                "cs",
+                "cy",
+                "da",
+                "de",
+                "dsb",
+                "el",
+                "en",
+                "en-au",
+                "en-gb",
+                "eo",
+                "es",
+                "es-ar",
+                "es-co",
+                "es-mx",
+                "es-ni",
+                "es-ve",
+                "et",
+                "eu",
+                "fa",
+                "fi",
+                "fr",
+                "fy",
+                "ga",
+                "gd",
+                "gl",
+                "he",
+                "hi",
+                "hr",
+                "hsb",
+                "ht",
+                "hu",
+                "hy",
+                "ia",
+                "id",
+                "ig",
+                "io",
+                "is",
+                "it",
+                "ja",
+                "ka",
+                "kab",
+                "kk",
+                "km",
+                "kn",
+                "ko",
+                "ky",
+                "lb",
+                "lt",
+                "lv",
+                "mk",
+                "ml",
+                "mn",
+                "mr",
+                "ms",
+                "my",
+                "nb",
+                "ne",
+                "nl",
+                "nn",
+                "os",
+                "pa",
+                "pl",
+                "pt",
+                "pt-br",
+                "ro",
+                "ru",
+                "sk",
+                "sl",
+                "sq",
+                "sr",
+                "sr-latn",
+                "sv",
+                "sw",
+                "ta",
+                "te",
+                "tg",
+                "th",
+                "tk",
+                "tr",
+                "tt",
+                "udm",
+                "ug",
+                "uk",
+                "ur",
+                "uz",
+                "vi",
+                "zh-hans",
+                "zh-hant"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "schema"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "basicAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.oai.openapi": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "application/vnd.oai.openapi+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CutoutJob": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status_url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "status_url"
+        ]
+      },
+      "CutoutJobStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string"
+          },
+          "result_key": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          }
+        },
+        "required": [
+          "error",
+          "id",
+          "result",
+          "result_key",
+          "state"
+        ]
+      },
+      "CutoutRequest": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "ra_deg": {
+            "type": "number",
+            "format": "double",
+            "maximum": 359.999999,
+            "minimum": 0
+          },
+          "dec_deg": {
+            "type": "number",
+            "format": "double",
+            "maximum": 90,
+            "minimum": -90
+          },
+          "size_deg": {
+            "type": "number",
+            "format": "double",
+            "maximum": 1,
+            "minimum": 1e-06
+          }
+        },
+        "required": [
+          "dec_deg",
+          "product_id",
+          "ra_deg",
+          "size_deg"
+        ]
+      },
+      "FitsMetadata": {
+        "type": "object",
+        "properties": {
+          "cutout_id": {
+            "type": "string"
+          },
+          "object_key": {
+            "type": "string"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "time_bounds_lower": {
+            "type": "number",
+            "format": "double"
+          },
+          "fits": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "cutout_id",
+          "fits",
+          "object_key",
+          "source_url",
+          "time_bounds_lower"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionid"
+      }
+    }
+  }
+}
