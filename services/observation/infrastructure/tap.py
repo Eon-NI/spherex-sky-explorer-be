@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, urlsplit
 
 import requests
 from astroquery.ipac.irsa import IrsaClass
+from pyvo.dal.exceptions import DALQueryError
 
 from services.observation.domain.models import TemporalObservation, TemporalSearch
 
@@ -18,11 +19,24 @@ class TapSession(requests.Session):
     def __init__(self, read_timeout):
         super().__init__()
         self.timeouts = (15, read_timeout)
+        # IRSA is public. Inherited proxies/netrc caused proxy 502s in diagnosis.
+        # Operators requiring their proxy/CA environment can explicitly opt in.
+        self.trust_env = os.getenv("IRSA_TAP_TRUST_ENV", "false").lower() == "true"
+        self.last_status = None
+        self.transport_error = None
 
     def request(self, method, url, **kwargs):
         kwargs["timeout"] = self.timeouts
         kwargs["allow_redirects"] = False
-        return super().request(method, url, **kwargs)
+        self.last_status = None
+        self.transport_error = None
+        try:
+            response = super().request(method, url, **kwargs)
+        except requests.RequestException as exc:
+            self.transport_error = type(exc).__name__
+            raise
+        self.last_status = response.status_code
+        return response
 
 
 def validate_reference(url, artifact_uri, query):
@@ -47,7 +61,26 @@ def validate_reference(url, artifact_uri, query):
             raise ValueError("IRSA cutout geometry mismatch")
 
 
+class TapUnavailable(RuntimeError):
+    """Transport/service failure eligible for the documented SIA2 fallback."""
+
+
+def transport_failure(exc):
+    seen = set()
+    while exc is not None and id(exc) not in seen:
+        seen.add(id(exc))
+        if isinstance(exc, (DALQueryError, requests.HTTPError)):
+            return False
+        if isinstance(exc, (requests.RequestException, OSError)):
+            return True
+        exc = exc.__cause__ or exc.__context__
+    return False
+
+
 class IrsaTapCatalog:
+    def __init__(self, read_timeout=None):
+        self.read_timeout = read_timeout
+
     @staticmethod
     def build_adql(query: TemporalSearch) -> str:
         ra, dec, size = (format(value, ".12g") for value in (query.ra_deg, query.dec_deg, query.size_deg))
@@ -66,6 +99,8 @@ class IrsaTapCatalog:
         results = []
         try:
             timeout = max(1, min(int(os.getenv("IRSA_TIMEOUT_SECONDS", "60")), 120))
+            if self.read_timeout is not None:
+                timeout = min(timeout, max(1, self.read_timeout))
             # A fresh client/session avoids mutating Astroquery's global singleton.
             client = IrsaClass()
             with TapSession(timeout) as session:
@@ -91,8 +126,16 @@ class IrsaTapCatalog:
             unique = list({item.product_id: item for item in results}.values())
             return unique[:query.limit]
         except Exception as exc:
-            logger.warning("IRSA TAP query failed (%s)", type(exc).__name__)
-            raise RuntimeError("IRSA TAP query unavailable") from exc
+            status = getattr(locals().get("session"), "last_status", None)
+            logger.warning("IRSA TAP query failed", extra={
+                "upstream_endpoint": "https://irsa.ipac.caltech.edu/TAP/sync",
+                "execution_mode": "sync", "exception_type": type(exc).__name__,
+                "http_status": status,
+                "transport_error_type": getattr(locals().get("session"), "transport_error", None),
+            })
+            unavailable = not isinstance(exc, DALQueryError) and (transport_failure(exc) or (status is not None and status >= 500))
+            error = TapUnavailable if unavailable else RuntimeError
+            raise error("IRSA TAP query unavailable") from exc
         finally:
             logger.info("IRSA TAP query completed", extra={"duration_seconds": perf_counter() - start,
                                                           "result_count": len(results)})

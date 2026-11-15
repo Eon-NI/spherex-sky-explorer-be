@@ -1,12 +1,15 @@
 # IRSA integration and scientific constraints
 
-## MVP del hackathon
+## Hackathon temporal discovery correction
 
-V?ase [BE01_MVP.md](BE01_MVP.md) para contratos, errores, pruebas y l?mites actuales.
-TAP usa una Session Requests propia con timeout efectivo de conexi?n/lectura y no
-modifica el singleton global Astroquery. El product_id sigue asociado a la consulta.
-El JSON exitoso se conserva; par?metros no soportados se rechazan con 400.
-Redis indisponible en rate limiting devuelve 503 antes de IRSA; no habilita acceso ilimitado.
+See [TAP_DISCOVERY_FIX.md](TAP_DISCOVERY_FIX.md) for current diagnosis, bounds and
+real HTTP evidence. Native TAP remains available through IrsaTapCatalog; the
+endpoint composes a bounded SIA2 point fallback on transport/service failure.
+Successful JSON fields, query-associated IDs and BE-02 SourceProduct are unchanged.
+The fallback uses real SIA2 t_min MJD UTC and verified artifact URLs, not fabricated
+TAP results. Native TAP was not verified successful; real discovery/detail passed
+through the explicitly logged SIA2 route. Redis throttling failure still returns
+503 before provider access. No FITS is downloaded during discovery.
 
 ## Sources
 
