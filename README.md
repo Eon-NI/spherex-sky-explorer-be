@@ -19,7 +19,31 @@ La consulta por FOV rectangular, HiPS, timelapse, difference, stack y extracció
 
 Docker Engine con Compose, o Python 3.12/3.13, PostgreSQL 17 y Redis 7. Copiar `.env.example` a `.env` y cambiar todas las claves. Definir `IRSA_SYNC_REGIONS` como lista JSON de regiones (`ra_deg`, `dec_deg`, `radius_deg`) o las tres variables individuales `IRSA_SYNC_RA_DEG`, `IRSA_SYNC_DEC_DEG` y `IRSA_SYNC_RADIUS_DEG` para activar el sync cada 24 horas. Sin regiones, Beat omite la tarea. El radio máximo de SIA2 es 1 grado y el FOV circular máximo es 2 grados de diámetro, ajustable hacia abajo con `EON_MAX_FOV_DEG`.
 
-## Inicio con Docker
+## MVP actual: Django en Windows
+
+Consultar [alcance, contratos y evidencia EON-BE-01](docs/BE01_MVP.md).
+Observation s?lo descubre/resuelve referencias; BE-02 obtiene/procesa FITS y BE-03
+coordina jobs. La suite de BE-01 no requiere MinIO.
+
+Para el hackathon, MinIO ser? un contenedor independiente con imagen
+`alpine/minio:RELEASE.2025-10-15T17-29-55Z`; su disponibilidad no se ha verificado.
+Django nativo Windows usar? `S3_ENDPOINT_URL=http://127.0.0.1:9000` y las variables
+`S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET` para BE-02. No se modific? Compose.
+`manage.py` no carga `.env` autom?ticamente: el entorno debe exportar sus variables.
+Para ejecutar Observation localmente, configurar PostgreSQL/Redis accesibles desde
+Windows y `SERVICE_NAME=observation`, y ejecutar `python manage.py runserver 8001`.
+Los clientes locales de BE-02 deber?n usar `OBSERVATION_SERVICE_URL=http://127.0.0.1:8001`.
+
+Validaci?n MVP: **79 pruebas pasaron, 5 integraciones omitidas; 5 smoke pasaron**.
+SIA2 real pas?; TAP real limit=5 agot? los timeouts de 30 y 60 segundos de forma
+controlada. **No se declara cerrado el MVP hasta validar TAP satisfactoriamente.**
+
+## Configuraci?n Docker hist?rica
+
+La siguiente configuraci?n describe el Compose existente, no el arranque de MinIO
+independiente acordado para el hackathon. `.env.example` prioriza ahora el endpoint
+S3 de Windows; esa direcci?n debe adaptarse si Django se ejecuta en contenedor.
+
 
 ```bash
 cp .env.example .env
@@ -66,7 +90,7 @@ Verificación en el entorno de inicialización (14 de noviembre de 2026): `pytho
 
 ## Iteración científica actual
 
-`EON_TAP_MAX_RESULTS` limita el volumen TAP; `EON_MAX_CUTOUT_BYTES` limita cada descarga; `IRSA_TIMEOUT_SECONDS` configura el timeout de Astroquery; `EON_INTERNAL_TOKEN` protege la creación de jobs entre servicios. Los endpoints costosos tienen límites de tasa respaldados por Redis; los workers usan concurrencia 1 (sync) y 2 (cutouts). Ver [AGENTS.md](AGENTS.md) para convenciones y estado. La verificación de esta iteración se reporta al finalizar; no debe confundirse la consulta HTTP directa a IRSA con una ejecución de la suite de integración Django/Astropy.
+`EON_TAP_MAX_RESULTS` limita el volumen TAP; `EON_MAX_CUTOUT_BYTES` limita cada descarga; `IRSA_TIMEOUT_SECONDS` fija la lectura HTTP de SIA2/TAP (1?120 s; conexi?n 15 s); `EON_INTERNAL_TOKEN` protege la creación de jobs entre servicios. Los endpoints costosos tienen límites de tasa respaldados por Redis; los workers usan concurrencia 1 (sync) y 2 (cutouts). Ver [AGENTS.md](AGENTS.md) para convenciones y estado. La verificación de esta iteración se reporta al finalizar; no debe confundirse la consulta HTTP directa a IRSA con una ejecución de la suite de integración Django/Astropy.
 
 ### Flujo bajo demanda y sincronización
 
