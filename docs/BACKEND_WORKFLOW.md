@@ -91,3 +91,26 @@ sequenceDiagram
     end
     Worker->>Redis: release lock
 ```
+
+
+## BE-02 processing boundary (hackathon)
+
+The existing cutout flow above remains available. The new application use case is
+`ProcessTimelapse.execute(TimelapseRequest(...))`; its Celery adapter is
+`eon.image_processing.render_timelapse` on the image_processing queue. BE-03 supplies
+job_id and temporal product IDs, owns submission/state/progress and consumes the
+returned `{job_id, status: "completed", frames}` manifest. The current Jobs HTTP
+allowlist has not been changed; integrating the new task/payload belongs to BE-03.
+
+Image Processing resolves every reference through Observation HTTP, validates the
+exact query geometry/detector and IRSA URL, downloads bounded server-side cutouts,
+verifies FITS acquisition times, aligns IMAGE on a common TAN grid, and renders PNG
+with one shared asinh scale. It uploads source FITS and PNGs via the existing S3
+port, then persists the JSON manifest last. Errors propagate to the caller; no
+completed result is returned after a failed upload. Partial objects can remain for
+a retry/cleanup policy owned by orchestration/storage operations.
+
+MinIO is an independent development container; native Windows uses
+S3_ENDPOINT_URL=http://127.0.0.1:9000. No FITS bytes travel in JSON/Celery, and no
+Observation or Jobs database is accessed by this processing path. See
+[BE02_MVP.md](BE02_MVP.md) for request/schema, limits, startup and verified evidence.
