@@ -1,0 +1,38 @@
+{
+  "phase": "search",
+  "passed": true,
+  "requests": [
+    {
+      "url": "http://localhost:8001/api/v1/observations/temporal/?ra_deg=210.80227&dec_deg=54.34895&size_deg=0.1&detector=SPHEREx-D2&limit=100",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/",
+      "status": 204,
+      "type": "text/html"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/",
+      "status": 202,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/c9585bf7-f7a6-4c17-b34e-1ea7a7fcd961/",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/c9585bf7-f7a6-4c17-b34e-1ea7a7fcd961/frames/0/",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "url": "http://localhost:8004/api/v1/timelapses/c9585bf7-f7a6-4c17-b34e-1ea7a7fcd961/frames/1/",
+      "status": 200,
+      "type": "image/png"
+    }
+  ],
+  "body": "Volver a Inicio\nES\nEN\n\nM\u00d3DULO \u00b7 SEARCH\n\nBusca un punto de inter\u00e9s\n10 may 2025 UTC\nD2\nExploratory: wavelength varies by exposure/position; brightness changes are not proof of variability. FLAGS labels retained, bitmap not interpreted; no quality-mask calibration.\n\u2212\n1.0\u00d7\n+\n\nIngresa la ascensi\u00f3n recta, la declinaci\u00f3n y el campo de visi\u00f3n.\n\nRA\nRight Ascension (\u00b0)\nDEC\nDeclination (\u00b0)\nFOV\n\u00b0\n\u2032\nField of view\nGO\n\nACCIONES\n\nImagen\nBlink\n\nMuestra la observaci\u00f3n de la \u00e9poca A.\n\n\u00c9POCA A\n10 may 2025 UTC\n24 jun 2026 UTC\n\u00c9POCA B\n10 may 2025 UTC\n24 jun 2026 UTC\nGracias por explorar el cielo con LOOK-EON.\n\nVuelve al inicio para conocer m\u00e1s sobre la misi\u00f3n SPHEREx, el Planeta X y el equipo detr\u00e1s del proyecto.\n\nRegresar al inicio\nObservatorio\nTimelapse\nB\u00fasqueda por coordenadas\nAn\u00e1lisis espectral\n\nEON \u00a9 2026. Proyecto de exploraci\u00f3n astron\u00f3mica.",
+  "canvas_sha256": "de24bbed28d3a3eb65a8f0f60c7555933ced0b1c231945b6c8f6959bbb811619"
+}

@@ -87,6 +87,7 @@ CACHES = {"default": {"BACKEND": "django.core.cache.backends.redis.RedisCache",
                       "LOCATION": CELERY_BROKER_URL}}
 REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
     "sia_search": "30/min", "tap_search": "10/min", "cutout_submit": "10/min",
+    "timelapse_submit": "10/min", "frame_delivery": "120/min",
     "metadata_read": "60/min", "job_status": "120/min", "fits_stream": "30/min",
     "spectral_submit": "30/min", "spectral_preview": "120/min",
 }

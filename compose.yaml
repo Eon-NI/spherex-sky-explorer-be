@@ -8,6 +8,13 @@ x-app: &app
       condition: service_started
   restart: unless-stopped
 
+x-container-env: &container_env
+  POSTGRES_HOST: postgres
+  REDIS_URL: redis://redis:6379/0
+  S3_ENDPOINT_URL: http://minio:9000
+  OBSERVATION_SERVICE_URL: http://observation:8000
+  JOB_SERVICE_URL: http://jobs:8000
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -81,30 +88,35 @@ services:
   observation:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: observation
     ports:
       - '8001:8000'
   image_processing:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: image_processing
     ports:
       - '8002:8000'
   spectral:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: spectral
     ports:
       - '8003:8000'
   jobs:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: jobs
     ports:
       - '8004:8000'
   observation_worker:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: observation
     command: celery -A eon_common.celery worker --concurrency=1 --loglevel=INFO
   image_worker:
@@ -117,6 +129,7 @@ services:
       minio_setup:
         condition: service_completed_successfully
     environment:
+      <<: *container_env
       SERVICE_NAME: image_processing
     command: celery -A eon_common.celery worker -Q image_processing --concurrency=2 --loglevel=INFO
   spectral_worker:
@@ -129,11 +142,13 @@ services:
       minio_setup:
         condition: service_completed_successfully
     environment:
+      <<: *container_env
       SERVICE_NAME: spectral
     command: celery -A eon_common.celery worker -Q spectral --pool=prefork --concurrency=2 --loglevel=INFO
   observation_beat:
     <<: *app
     environment:
+      <<: *container_env
       SERVICE_NAME: observation
     command: celery -A eon_common.celery beat --loglevel=INFO --schedule=/home/eon/beat/celerybeat-schedule
     volumes:

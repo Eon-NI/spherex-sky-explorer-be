@@ -109,3 +109,40 @@ def test_tap_query_error_is_not_masked_by_sia_even_with_http_500():
             IrsaTemporalCatalog(primary=IrsaTapCatalog(),fallback=fallback).search(QUERY)
         assert not isinstance(error.value,TapUnavailable)
         fallback.search.assert_not_called()
+
+
+def test_failed_transport_is_closed_before_retry(monkeypatch):
+    import requests
+    from astropy.table import Table
+
+    from services.observation.domain.models import TemporalSearch
+    from services.observation.infrastructure import temporal
+
+    sessions = []
+    class Session:
+        last_status = 502
+        transport_error = None
+        closed = False
+        def __init__(self, *_):
+            sessions.append(self)
+        def __enter__(self):
+            return self
+        def __exit__(self, *_):
+            self.closed = True
+
+    attempts = []
+    def get_collection(collection, query, *, session, radius_deg):
+        assert all(s.closed for s in sessions if s is not session)
+        attempts.append(collection)
+        if len(attempts) == 1:
+            response = requests.Response()
+            response.status_code = 502
+            raise requests.HTTPError(response=response)
+        return Table(names=['access_url', 'energy_bandpassname', 't_min', 't_max', 'obs_collection'],
+                     dtype=['U1', 'U1', float, float, 'U1'])
+    monkeypatch.setattr(temporal, 'TapSession', Session)
+    monkeypatch.setattr(temporal, '_get_collection', get_collection)
+    monkeypatch.setattr(temporal, 'sleep', lambda _: None)
+    assert temporal.IrsaSiaTemporalCatalog().search(TemporalSearch(1, 2, .1, 'SPHEREx-D2', 5)) == []
+    assert all(s.closed for s in sessions)
+    assert len(sessions) == 5

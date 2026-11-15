@@ -1,9 +1,10 @@
 """Job Service adapter over the existing Celery/Redis broker and result backend."""
-import os
 import uuid
+
 from celery.result import AsyncResult
 from django.conf import settings
 from redis import Redis
+
 from eon_common.celery import app
 from services.jobs.domain.models import Job, JobState
 
@@ -26,15 +27,24 @@ class CeleryJobQueue:
         try:
             self.redis.setex(f"eon:job:id:{job_id}", 7 * 24 * 3600, "1")
             queue = "spectral" if task_name.startswith("eon.spectral.") else "image_processing"
-            app.send_task(task_name, kwargs=payload, task_id=job_id, queue=queue)
+            task_payload = payload
+            if task_name == "eon.image_processing.render_timelapse":
+                task_payload = {**payload, "job_id": job_id}
+                self.redis.setex(f"eon:job:task:{job_id}", 7 * 24 * 3600, task_name)
+            app.send_task(task_name, kwargs=task_payload, task_id=job_id, queue=queue)
         except Exception:
             self.redis.delete(lock_key)
             self.redis.delete(f"eon:job:id:{job_id}")
+            self.redis.delete(f"eon:job:task:{job_id}")
             raise
         return job_id
 
 
 class CeleryJobRepository:
+    def task_name(self, job_id: str) -> str | None:
+        value = Redis.from_url(settings.CELERY_BROKER_URL).get(f"eon:job:task:{job_id}")
+        return value.decode() if value else None
+
     def get(self, job_id: str) -> Job | None:
         try:
             uuid.UUID(job_id)

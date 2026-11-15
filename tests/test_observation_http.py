@@ -158,7 +158,7 @@ def test_temporal_provider_failures_are_502(client, ports, failure):
     ports[1].side_effect = failure
     response = client.get(TEMPORAL, QUERY)
     assert response.status_code == 502
-    assert response.json() == {"detail": "IRSA TAP query unavailable"}
+    assert response.json() == {"detail": "IRSA temporal discovery unavailable"}
 
 
 def test_sia_provider_failure_is_502(client, ports):
@@ -243,3 +243,44 @@ def test_openapi_matches_envelopes_and_errors():
             assert "geometry" in response["properties"]
     detail = schema["paths"][TEMPORAL + "{product_id}/"]["get"]
     assert {"200", "400", "404", "429", "503"} <= set(detail["responses"])
+
+
+@pytest.mark.parametrize("position", [(210.80227, 54.34895), (304.693508808, 42.4436872991), (0, 90)])
+@pytest.mark.parametrize("available", [True, False])
+def test_temporal_regions_transport_fallback_and_empty_cache(client, ports, position, available):
+    from dataclasses import replace
+    from services.observation.infrastructure.tap import TapUnavailable
+    from services.observation.infrastructure.temporal import IrsaSiaTemporalCatalog
+    ra, dec = position
+    product = replace(PRODUCT, ra_deg=ra, dec_deg=dec,
+        product_id=TemporalObservation.product_key(PRODUCT.artifact_uri, ra, dec, .1, PRODUCT.detector, PRODUCT.time_bounds_lower),
+        cutout_url=f"https://irsa.ipac.caltech.edu/{PRODUCT.artifact_uri}?center={ra},{dec}d&size=0.1")
+    ports[1].side_effect = TapUnavailable("bounded TAP timeout")
+    with patch.object(IrsaSiaTemporalCatalog, "search", return_value=[product] if available else []) as fallback:
+        payload = dict(QUERY, ra_deg=ra, dec_deg=dec)
+        first = client.get(TEMPORAL, payload)
+        second = client.get(TEMPORAL, payload)
+    assert first.status_code == second.status_code == 200
+    assert first.json() == second.json()
+    assert first.json()["count"] == int(available)
+    fallback.assert_called_once()
+    assert fallback.call_args.args[0].ra_deg == ra
+    assert fallback.call_args.args[0].dec_deg == dec
+
+
+def test_both_catalogs_unavailable_are_not_cached_as_empty(client, ports, caplog):
+    import requests
+    from services.observation.infrastructure.tap import TapUnavailable
+    from services.observation.infrastructure.temporal import IrsaSiaTemporalCatalog
+    ports[1].side_effect = TapUnavailable("bounded TAP timeout")
+    upstream = requests.Response()
+    upstream.status_code = 502
+    with patch.object(IrsaSiaTemporalCatalog, "search", side_effect=requests.HTTPError("SIA gateway", response=upstream)) as fallback:
+        for _ in range(2):
+            response = client.get(TEMPORAL, QUERY)
+            assert response.status_code == 502
+            assert response.json() == {"detail": "IRSA temporal discovery unavailable"}
+    assert fallback.call_count == 2
+    assert ports[2].saved == {}
+    record = next(r for r in caplog.records if r.message == "Temporal discovery unavailable")
+    assert record.exception_type == "HTTPError" and record.http_status == 502

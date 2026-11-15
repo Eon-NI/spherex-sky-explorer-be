@@ -1,0 +1,140 @@
+{
+  "passed": true,
+  "jobs": [
+    {
+      "job_id": "c9585bf7-f7a6-4c17-b34e-1ea7a7fcd961",
+      "frame_count": 2,
+      "timestamps": [
+        "2025-05-10T17:04:37.741Z",
+        "2026-06-24T03:19:00.063Z"
+      ],
+      "grid": {
+        "header": {
+          "WCSAXES": 2,
+          "CRPIX1": 30.0,
+          "CRPIX2": 30.0,
+          "CDELT1": -0.0017222222222222,
+          "CDELT2": 0.0017222222222222,
+          "CUNIT1": "deg",
+          "CUNIT2": "deg",
+          "CTYPE1": "RA---TAN",
+          "CTYPE2": "DEC--TAN",
+          "CRVAL1": 210.80227,
+          "CRVAL2": 54.34895,
+          "LONPOLE": 180.0,
+          "LATPOLE": 54.34895,
+          "MJDREF": 0.0,
+          "RADESYS": "ICRS"
+        },
+        "shape": [
+          59,
+          59
+        ],
+        "scale_arcsec": 6.2
+      },
+      "normalization": {
+        "stretch": "asinh",
+        "a": 0.1,
+        "vmin": 0.5805660680415113,
+        "vmax": 5.391304584857066,
+        "unit": "MJy/sr"
+      },
+      "frames": [
+        {
+          "product_id": "803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03",
+          "source_fits_bytes": 4000320,
+          "png_bytes": 14099,
+          "sha256": "0db2035b8f36cb33fb01661efe94ef76605d3008d1c574e3f9215fad8d3374d2",
+          "url": "http://localhost:8004/api/v1/timelapses/c9585bf7-f7a6-4c17-b34e-1ea7a7fcd961/frames/0/"
+        },
+        {
+          "product_id": "de6ca8beea45281d3a157b9a136b5d5b36fa0f2b7d1025d19222a938bbe061be",
+          "source_fits_bytes": 4000320,
+          "png_bytes": 14118,
+          "sha256": "aa67c611b92eb2e9267034c8127beb237fefd78e572668748430018ecafe14f8",
+          "url": "http://localhost:8004/api/v1/timelapses/c9585bf7-f7a6-4c17-b34e-1ea7a7fcd961/frames/1/"
+        }
+      ]
+    },
+    {
+      "job_id": "a18d40b0-08fc-449f-ba31-7f47b71a48a3",
+      "frame_count": 5,
+      "timestamps": [
+        "2025-05-10T17:04:37.741Z",
+        "2025-05-24T21:58:59.879Z",
+        "2025-12-09T07:20:11.647Z",
+        "2026-05-22T19:42:28.021Z",
+        "2026-06-24T03:19:00.063Z"
+      ],
+      "grid": {
+        "header": {
+          "WCSAXES": 2,
+          "CRPIX1": 30.0,
+          "CRPIX2": 30.0,
+          "CDELT1": -0.0017222222222222,
+          "CDELT2": 0.0017222222222222,
+          "CUNIT1": "deg",
+          "CUNIT2": "deg",
+          "CTYPE1": "RA---TAN",
+          "CTYPE2": "DEC--TAN",
+          "CRVAL1": 210.80227,
+          "CRVAL2": 54.34895,
+          "LONPOLE": 180.0,
+          "LATPOLE": 54.34895,
+          "MJDREF": 0.0,
+          "RADESYS": "ICRS"
+        },
+        "shape": [
+          59,
+          59
+        ],
+        "scale_arcsec": 6.2
+      },
+      "normalization": {
+        "stretch": "asinh",
+        "a": 0.1,
+        "vmin": 0.5547248453499907,
+        "vmax": 5.621057146388439,
+        "unit": "MJy/sr"
+      },
+      "frames": [
+        {
+          "product_id": "803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03",
+          "source_fits_bytes": 4000320,
+          "png_bytes": 14065,
+          "sha256": "af5bb520bfc0460bc9055b9596d895f87f640d217e4fb6464b5324c137967de6",
+          "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/0/"
+        },
+        {
+          "product_id": "bc4c257be39aa5c0fec9d9f7ca2af1cac109b7dddab426b12dbcfc27da51f9bd",
+          "source_fits_bytes": 4000320,
+          "png_bytes": 14236,
+          "sha256": "b5aa01396ebb5e4a373644a05fa1b86dccd752b139ba5d0c77504ae2c7cf5e28",
+          "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/1/"
+        },
+        {
+          "product_id": "9c61b12b86bca7eb7be2c76975e47c01c0dc5c67d83b3dda563ba73cb0d6cb2c",
+          "source_fits_bytes": 4000320,
+          "png_bytes": 14200,
+          "sha256": "2faa35a83cde366ee5099663c488d16521eada9c3495d31b74b0692db3f38b3d",
+          "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/2/"
+        },
+        {
+          "product_id": "becbb1a873677d6ff62149a8e5174e0cd90940f5e8760839a0d609bfb1ab28e8",
+          "source_fits_bytes": 4000320,
+          "png_bytes": 13903,
+          "sha256": "b59f417c63de973cbd6acc96c99594dd12a686c55c9c68dafc2584ee09913389",
+          "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/3/"
+        },
+        {
+          "product_id": "de6ca8beea45281d3a157b9a136b5d5b36fa0f2b7d1025d19222a938bbe061be",
+          "source_fits_bytes": 4000320,
+          "png_bytes": 14013,
+          "sha256": "64426ad084032877a424152fe025fce46bc444a812c4ccb8a5ddef8cd4d9f228",
+          "url": "http://localhost:8004/api/v1/timelapses/a18d40b0-08fc-449f-ba31-7f47b71a48a3/frames/4/"
+        }
+      ],
+      "source_fits_verified": true
+    }
+  ]
+}

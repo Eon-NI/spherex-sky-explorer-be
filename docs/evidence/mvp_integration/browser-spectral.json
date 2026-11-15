@@ -1,0 +1,37 @@
+{
+  "phase": "spectral",
+  "passed": true,
+  "requests": [
+    {
+      "url": "http://localhost:8003/api/v1/spectral/cubes/",
+      "status": 204,
+      "type": "text/html"
+    },
+    {
+      "url": "http://localhost:8003/api/v1/spectral/cubes/",
+      "status": 202,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8003/api/v1/spectral/jobs/87b9ea3b-f730-4161-a03e-2abc500f9eb0/",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "url": "http://localhost:8003/api/v1/spectral/cubes/677/channels/0/preview/?ra_deg=10.6847&dec_deg=41.26875&fov_deg=0.1",
+      "status": 200,
+      "type": "image/png"
+    }
+  ],
+  "body": "Volver a Inicio\nES\nEN\nM\u00d3DULO \u00b7 SPECTRAL EXPLORER\nMira un punto a trav\u00e9s de los 102 canales de SPHEREx\n\nLa imagen muestra una de las 102 capas del cubo HiPS DR1. Cambia de canal para ver otra longitud de onda; haz clic en la imagen para trazar la intensidad de ese punto en los 102 canales.\n\n\u03bb 0.753 \u00b5m\nUna capa \u00b7 MJy/sr \u00b7 escala de grises\nCH 001 / 102\nD1\n\u2212\n1.0\u00d7\n+\n\nCUBO ESPECTRAL\n\n102 capas de la misma regi\u00f3n; el visor ense\u00f1a una a la vez. Los colores de este esquema no son colores f\u00edsicos.\n\nCH 001\n0.753 \u00b5m\n4.988 \u00b5m \u00b7 al fondo\n\nESPECTRO DE LOS PUNTOS\n\n1 \u00b5m\n2 \u00b5m\n3 \u00b5m\n4 \u00b5m\n5 \u00b5m\nMJy/sr\nPunto 1\n10.6828\u00b0, +41.2761\u00b0\nNHITS 5 \u00b7 FLAGS 2097152\n\nIngresa la ascensi\u00f3n recta, la declinaci\u00f3n y el campo de visi\u00f3n.\n\nRA\nRight Ascension (\u00b0)\nDEC\nDeclination (\u00b0)\nFOV\n\u00b0\n\u2032\nField of view\nGO\n\nESPECTRO\n\n0.753 \u00b5m\n\nCanal 1 / 102\n\nDetector D1\n\nD1\nD2\nD3\nD4\nD5\nD6\n0.753 \u00b5m\n4.988 \u00b5m\nGracias por explorar el cielo con LOOK-EON.\n\nVuelve al inicio para conocer m\u00e1s sobre la misi\u00f3n SPHEREx, el Planeta X y el equipo detr\u00e1s del proyecto.\n\nRegresar al inicio\nObservatorio\nTimelapse\nB\u00fasqueda por coordenadas\nAn\u00e1lisis espectral\n\nEON \u00a9 2026. Proyecto de exploraci\u00f3n astron\u00f3mica.",
+  "canvas_sha256": "bc4106ac0c89adb3af8031b9541792db99c6e1b2310218890eb7b59f8ae2a1cc",
+  "spectrum": {
+    "point_count": 102,
+    "blank_channels": [
+      50,
+      51
+    ],
+    "product_id": "ivo://IPAC/P/SPHEREx/DR1/cube",
+    "unit": "MJy/sr"
+  }
+}

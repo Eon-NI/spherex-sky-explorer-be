@@ -200,9 +200,14 @@ class TemporalSearchView(APIView):
         except (DatabaseError, RedisError):
             logger.warning("Observation metadata infrastructure unavailable")
             return Response({"detail": "Observation metadata service unavailable"}, status=503)
-        except (RequestException, OSError, ValueError, RuntimeError, ParseError):
-            logger.warning("Temporal search unavailable")
-            return Response({"detail": "IRSA TAP query unavailable"}, status=502)
+        except (RequestException, OSError, ValueError, RuntimeError, ParseError) as exc:
+            logger.warning("Temporal discovery unavailable", extra={
+                "exception_type": type(exc).__name__,
+                "http_status": getattr(getattr(exc, "response", None), "status_code", None),
+                "ra_deg": query.ra_deg, "dec_deg": query.dec_deg,
+                "detector": query.detector,
+            })
+            return Response({"detail": "IRSA temporal discovery unavailable"}, status=502)
         return Response({"count": len(results), "results": TemporalObservationSerializer(results, many=True).data})
 
 

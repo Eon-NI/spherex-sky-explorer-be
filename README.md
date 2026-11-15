@@ -77,8 +77,8 @@ provide cutout_id, metadata and a separate binary FITS stream at
 /api/v1/cutouts/{cutout_id}/fits/. The new BE-02 entry point is the processing task
 `eon.image_processing.render_timelapse`, called by BE-03 with an existing job_id,
 1-10 product IDs and matching region. It returns a manifest only after S3 uploads.
-The current Jobs HTTP allowlist still supports cutouts only; BE-03 must integrate
-the new task/payload. No second lifecycle endpoint was introduced.
+The protected Jobs HTTP allowlist retains cutout/Spectral tasks. Public temporal
+orchestration is exposed through /api/v1/timelapses/; see docs/MVP_INTEGRATION.md.
 
 ## Configuration and synchronization
 
@@ -163,3 +163,12 @@ Spectral (`spectral`) workers. Observation Beat stores its unchanged daily sched
 in a non-root writable persistent beatdata volume. See
 [Celery Compose setup and evidence](docs/CELERY_COMPOSE.md) for targeted startup,
 routing, actual runtime checks and platform limitations.
+
+
+## Real MVP temporal frontend integration
+
+Jobs now provides the public `/api/v1/timelapses/` facade for bounded Image/Blink and
+five-frame playback, reusing BE-02 and delivering private MinIO PNGs through Jobs.
+The stored BE-02 manifest is unchanged. See [MVP integration](docs/MVP_INTEGRATION.md)
+for contracts, container endpoints, migrations, real browser/scientific verification,
+Spectral baseline/regression and remaining limits. Internal `/jobs/` stays separate.

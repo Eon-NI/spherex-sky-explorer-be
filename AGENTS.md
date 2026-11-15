@@ -42,3 +42,14 @@ EON-BE-03 verification on 2026-11-15 used the official 320,909,760-byte DR1 tile
 On 2026-11-14 the local `tck-03` branch fast-forwarded to `origin/develop` at `634044b`, adding Observation's bounded SIA2 temporal fallback. Observation was restarted with a source mount and its temporal endpoint returned HTTP 200 with a DR1 product. The original cold-tile job eventually completed; a worker log measured 419 seconds. The frontend displays Jobs progress and honors `Retry-After` on HTTP 429; `pnpm build` passed.
 
 Subsequent investigation found that Jobs incorrectly applied Image Processing's 10/min submission throttle to Spectral, causing Jobs 429 to surface as Spectral 502. Jobs now chooses a separate 30/min Spectral scope, and Spectral propagates upstream 429. Preview scope is 120/min. A bounded local disk cache avoids repeated 321 MB S3 downloads for spectra and previews, and a maximum of four verified IRSA HTTP byte ranges is used for cold downloads. A first live parallel attempt failed because Celery progress was updated from a transfer thread; progress is now emitted only by the task thread. The retry completed in 381.35 s for tile 2666 with a persistent S3 key. The previous serial ingestion of a different tile took 419.14 s; this is not a controlled comparison. Cached spectra completed in 0.03–0.3 s of worker time, and two preview requests returned 200 in 0.95 s and 0.092 s. Spectral tasks use late acknowledgments and prefetch one; two live Spectral workers are running to prevent cold downloads from holding up every spectrum. Eighteen regressions passed. See `docs/SPECTRAL_EXPLORATION.md`.
+
+
+## MVP temporal browser integration
+
+Jobs owns the public timelapses facade and server-generated task IDs. It verifies
+BE-01 references over HTTP and dispatches existing BE-02 render_timelapse to
+image_processing. Its PNG delivery validates completed job identity and object-key
+prefix; no FITS processing or cross-service database reads belong in Jobs. Keep the
+raw job_id/status/frames result contract unchanged; delivery URLs are a separate
+public envelope. Spectral science/client/components remain unchanged. See
+[docs/MVP_INTEGRATION.md](docs/MVP_INTEGRATION.md) for verified scope and limitations.
