@@ -10,10 +10,12 @@ Cada proceso Django selecciona un único contexto con `SERVICE_NAME` y utiliza u
 | --- | ---: | --- |
 | Observation | 8001 | SIA2/TAP con caché Redis/PostgreSQL y sincronización regional diaria |
 | Image Processing | 8002 | Cutouts verificados, almacenamiento S3 y metadatos FITS/WCS |
-| Spectral | 8003 | Contrato de cubo y extracción espectral |
+| Spectral | 8003 | Cubo HiPS DR1, previews y espectros exploratorios |
 | Jobs | 8004 | Cola Celery, idempotencia Redis y consulta de estados/resultados |
 
-La consulta por FOV rectangular, HiPS, timelapse, difference, stack y extracción espectral siguen pendientes. `radius_deg` es el radio de una búsqueda circular; `fov_deg` es su diámetro, no el lado de un rectángulo. QR3 tiene prioridad en la búsqueda SIA2 por defecto y DR1 complementa. TAP conserva el orden cronológico. La sincronización diaria revisa las cuatro colecciones en regiones configuradas y actualiza solo metadatos nuevos o modificados.
+La consulta por FOV rectangular, timelapse, difference y stack siguen pendientes. La exploración del cubo HiPS DR1 y la extracción espectral exploratoria se documentan en [docs/SPECTRAL_EXPLORATION.md](docs/SPECTRAL_EXPLORATION.md). `radius_deg` es el radio de una búsqueda circular en Observation; su `fov_deg` es el diámetro, no el lado de un rectángulo. QR3 tiene prioridad en la búsqueda SIA2 por defecto y DR1 complementa. TAP conserva el orden cronológico. La sincronización diaria revisa las cuatro colecciones en regiones configuradas y actualiza solo metadatos nuevos o modificados.
+
+Spectral requiere un worker Celery escuchando la cola `spectral`; el `compose.yaml` actual no lo declara. La verificación de esta iteración completó el flujo con FITS real de IRSA y MinIO temporal, iniciado desde un binario oficial porque el registro rechazó las imágenes MinIO referidas por Compose. Para un arranque limpio se necesita una imagen MinIO accesible o iniciar MinIO por separado. Consulte las pruebas y los payloads en la documentación espectral.
 
 ## Requisitos
 
