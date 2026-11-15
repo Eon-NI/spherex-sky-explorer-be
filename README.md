@@ -13,39 +13,30 @@ presentation owns HTTP. eon_common contains shared configuration and transport.
 
 | Service | Port | Scope |
 | --- | ---: | --- |
-| Observation | 8001 | SIA2/TAP, exact-query Redis/PostgreSQL cache, daily regional sync |
-| Image Processing | 8002 | Verified FITS cutouts, S3, metadata/WCS and BE-02 PNG processing |
-| Spectral | 8003 | Cube/extraction contracts only |
-| Jobs | 8004 | Existing Celery jobs; BE-03 owns orchestration and frontend delivery |
+| Observation | 8001 | SIA2/TAP discovery, Redis/PostgreSQL caching, daily regional synchronization, and bounded SIA2 temporal fallback |
+| Image Processing | 8002 | Verified FITS cutouts, S3 storage, FITS/WCS metadata, and chronological PNG timelapse processing |
+| Spectral | 8003 | SPHEREx DR1 HiPS cube exploration, previews, and exploratory spectral extraction |
+| Jobs | 8004 | Celery jobs, Redis idempotency, job status and result retrieval; BE-03 owns orchestration and frontend delivery |
 
-See [BE-01 contracts](docs/BE01_MVP.md), [BE-02 MVP](docs/BE02_MVP.md),
-[workflow](docs/BACKEND_WORKFLOW.md) and [IRSA constraints](docs/IRSA_INTEGRATION.md).
+See [BE-01 contracts](docs/BE01_MVP.md), [BE-02 MVP](docs/BE02_MVP.md), [Spectral exploration](docs/SPECTRAL_EXPLORATION.md), [backend workflow](docs/BACKEND_WORKFLOW.md), and [IRSA constraints](docs/IRSA_INTEGRATION.md).
 
-Rectangular catalog FOV, HiPS, difference, stack, spectral extraction and frontend
-playback remain outside this implementation. BE-02 now generates PNG sequences;
-it does not implement the frontend player or BE-03 job lifecycle. radius_deg is a
-circular radius; fov_deg is its diameter. QR3 has default SIA2 priority, supplemented
-by DR1. TAP preserves chronology. Daily sync queries configured regions across four
-wide/deep collections and writes only new/changed metadata.
+Rectangular catalog FOV, difference imaging, stacking, and frontend timelapse playback remain outside the verified implementation scope. BE-02 generates chronological PNG sequences and a BE-03-compatible manifest, but does not implement frontend playback or the complete BE-03 orchestration lifecycle.
+
+In Observation, `radius_deg` is the radius of a circular search, while `fov_deg` is its diameter, not the side length of a rectangular region. QR3 has default SIA2 priority, supplemented by DR1. Temporal discovery supports a bounded SIA2 fallback when TAP is unavailable; native TAP queries may still time out.
+
+Daily regional synchronization queries configured regions across four wide/deep collections and updates only new or changed metadata.
+
+Spectral exploration and extraction are documented in [docs/SPECTRAL_EXPLORATION.md](docs/SPECTRAL_EXPLORATION.md). Spectral processing requires a Celery worker subscribed to the `spectral` queue. Verify that the final Docker Compose configuration includes this worker before claiming complete deployment support.
 
 ## Requirements and local Windows setup
 
-Python 3.12/3.13, PostgreSQL 17 and Redis 7. Copy .env.example to .env and configure
-secrets outside source control. manage.py does not load .env automatically: export
-variables in CMD/PowerShell or use your development environment's loader.
+Use Docker Engine with Docker Compose, or Python 3.12/3.13 with PostgreSQL 17 and Redis 7. Image processing also requires S3-compatible object storage.
 
-```cmd
-py -3.13 -m venv .venv
-.venv\Scripts\activate.bat
-python -m pip install -e ".[dev]"
-set SERVICE_NAME=image_processing
-set POSTGRES_HOST=127.0.0.1
-set REDIS_URL=redis://127.0.0.1:6379/0
-set OBSERVATION_SERVICE_URL=http://127.0.0.1:8001
-set JOB_SERVICE_URL=http://127.0.0.1:8004
-set S3_ENDPOINT_URL=http://127.0.0.1:9000
-python manage.py check
-```
+Copy `.env.example` to `.env` and configure credentials outside source control. `manage.py` does not automatically load `.env`; export the required variables in CMD/PowerShell or use an environment loader.
+
+To enable daily Observation synchronization, configure `IRSA_SYNC_REGIONS` as a JSON list of regions containing `ra_deg`, `dec_deg`, and `radius_deg`, or use the individual variables `IRSA_SYNC_RA_DEG`, `IRSA_SYNC_DEC_DEG`, and `IRSA_SYNC_RADIUS_DEG`. Without configured regions, the scheduled task skips synchronization.
+
+The maximum SIA2 search radius is 1 degree, corresponding to a circular field of view of up to 2 degrees in diameter, subject to `EON_MAX_FOV_DEG`.
 
 Provide DJANGO_SECRET_KEY, PostgreSQL credentials and S3_ACCESS_KEY/S3_SECRET_KEY/
 S3_BUCKET through your local configuration. Use SERVICE_NAME=observation and

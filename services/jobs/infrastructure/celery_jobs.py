@@ -13,7 +13,7 @@ class CeleryJobQueue:
         self.redis = Redis.from_url(settings.CELERY_BROKER_URL)
 
     def submit(self, task_name: str, payload: dict[str, object], idempotency_key: str) -> str:
-        lock_key = f"eon:job:cutout:{idempotency_key}"
+        lock_key = f"eon:job:{task_name}:{idempotency_key}"
         job_id = str(uuid.uuid4())
         if not self.redis.set(lock_key, job_id, nx=True, ex=7 * 24 * 3600):
             existing = self.redis.get(lock_key)
@@ -25,7 +25,8 @@ class CeleryJobQueue:
             return self.submit(task_name, payload, idempotency_key)
         try:
             self.redis.setex(f"eon:job:id:{job_id}", 7 * 24 * 3600, "1")
-            app.send_task(task_name, kwargs=payload, task_id=job_id, queue="image_processing")
+            queue = "spectral" if task_name.startswith("eon.spectral.") else "image_processing"
+            app.send_task(task_name, kwargs=payload, task_id=job_id, queue=queue)
         except Exception:
             self.redis.delete(lock_key)
             self.redis.delete(f"eon:job:id:{job_id}")
@@ -47,11 +48,14 @@ class CeleryJobRepository:
             "RECEIVED": JobState.PENDING,
             "STARTED": JobState.RUNNING,
             "RETRY": JobState.RUNNING,
+            "PROGRESS": JobState.RUNNING,
             "SUCCESS": JobState.SUCCEEDED,
             "FAILURE": JobState.FAILED,
             "REVOKED": JobState.FAILED,
         }.get(result.state, JobState.PENDING)
         data = result.result if state == JobState.SUCCEEDED and isinstance(result.result, dict) else {}
+        progress = (result.info.get("progress") if state == JobState.RUNNING
+                    and isinstance(result.info, dict) else None)
         return Job(id=job_id, state=state, result_key=data.get("object_key"),
                    error="Processing failed" if state == JobState.FAILED else None,
-                   result=data if data else None)
+                   result=data if data else None, progress=100 if state == JobState.SUCCEEDED else progress)
