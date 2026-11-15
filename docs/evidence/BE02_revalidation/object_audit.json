@@ -1,0 +1,83 @@
+{
+  "checked_at_utc": "2026-11-15T02:49:50.720065+00:00",
+  "status": "passed",
+  "grid_shape": [
+    59,
+    59
+  ],
+  "normalization": {
+    "stretch": "asinh",
+    "a": 0.1,
+    "vmin": 0.6057568590745926,
+    "vmax": 6.1455548003325635,
+    "unit": "MJy/sr"
+  },
+  "objects": [
+    {
+      "product_id": "803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03",
+      "timestamp": "2025-05-10T17:04:37.741Z",
+      "source_sha256": "0143817ceec1a56d8ec85b7f8f5d760e20b3376a7afd73bf637657ff36eb980b",
+      "source_bytes": 4000320,
+      "wcs_roundtrip_max_arcsec": 2.0167959800049333e-06,
+      "catalog_fits_time_difference_seconds": 0.006199674680829048,
+      "coverage_fraction": 0.8043665613329503,
+      "png_sha256": "f49850261d495c715633fc3b7271d9e951142485afaa9ac186575e405642106f",
+      "png_bytes": 13610,
+      "object_key": "timelapses/be02-validation-ca6ec81c827e476fb23ac9cef0e1cbc2/64696a730b20d332ec88daa1/frame-000.png",
+      "shared_scale_pixels_exact": true
+    },
+    {
+      "product_id": "115e1d2d1b532a5f4c059b634afd4f1e6139b01955a312cac18fac708f8abec9",
+      "timestamp": "2025-05-10T17:06:46.672Z",
+      "source_sha256": "024ca59a1b8e7d1756f8abdcb186aaa769b2b347184dd3a18daed5aef418a38f",
+      "source_bytes": 4000320,
+      "wcs_roundtrip_max_arcsec": 6.631281109433249e-08,
+      "catalog_fits_time_difference_seconds": 0.015999586321413517,
+      "coverage_fraction": 0.8043665613329503,
+      "png_sha256": "39987cd77de23046a9244dc4de2641fa643b0f811558abc8200b4445d6aea5ba",
+      "png_bytes": 13777,
+      "object_key": "timelapses/be02-validation-ca6ec81c827e476fb23ac9cef0e1cbc2/64696a730b20d332ec88daa1/frame-001.png",
+      "shared_scale_pixels_exact": true
+    },
+    {
+      "product_id": "c8513c4d408cd9d1ab1173137b40b3733199bbbd9c6e241c45ce6a59997c557c",
+      "timestamp": "2025-05-10T17:08:55.602Z",
+      "source_sha256": "e94807c1118d905f973b586c87237d6b71b8fe9ae1d418545bc1a9b1d9580ccb",
+      "source_bytes": 4000320,
+      "wcs_roundtrip_max_arcsec": 2.9007173769598107e-08,
+      "catalog_fits_time_difference_seconds": 0.037199934013187885,
+      "coverage_fraction": 0.8029301924734272,
+      "png_sha256": "b13f25448b8913baa925b3b5d838b46a58f56a32542d53f03820ece5927286e5",
+      "png_bytes": 13808,
+      "object_key": "timelapses/be02-validation-ca6ec81c827e476fb23ac9cef0e1cbc2/64696a730b20d332ec88daa1/frame-002.png",
+      "shared_scale_pixels_exact": true
+    },
+    {
+      "product_id": "845a21a4c04280bb0121f45fe24a2d520b374273e12201328ef518b4c573ca34",
+      "timestamp": "2025-05-10T17:11:04.533Z",
+      "source_sha256": "cb92d334cede502ffc2e71bab35172636e07d8afb2eb85c7d63387addbb33699",
+      "source_bytes": 4000320,
+      "wcs_roundtrip_max_arcsec": 4.464443178734073e-08,
+      "catalog_fits_time_difference_seconds": 0.02700020559132099,
+      "coverage_fraction": 0.803792013789141,
+      "png_sha256": "84f2b11837e8999a3f96590d7b0d2b2d60ed9bd490cc913af81a337dc79d1500",
+      "png_bytes": 13774,
+      "object_key": "timelapses/be02-validation-ca6ec81c827e476fb23ac9cef0e1cbc2/64696a730b20d332ec88daa1/frame-003.png",
+      "shared_scale_pixels_exact": true
+    },
+    {
+      "product_id": "7bff6a092300bac0e55dda0aba0f257038963465075bcb081e889a2fd6405caf",
+      "timestamp": "2025-05-10T21:58:09.061Z",
+      "source_sha256": "c698c4a360e7fc6384462c6aa74f6c010453cce0853e7ba1cc4d8aa3d6978665",
+      "source_bytes": 3988800,
+      "wcs_roundtrip_max_arcsec": 1.4990680958156702e-06,
+      "catalog_fits_time_difference_seconds": 0.030199997127056122,
+      "coverage_fraction": 0.6087331226659006,
+      "png_sha256": "2244c110d27017ddfc6a43c4cdcde8815557132f13a24694d24777f6554f81ab",
+      "png_bytes": 12399,
+      "object_key": "timelapses/be02-validation-ca6ec81c827e476fb23ac9cef0e1cbc2/64696a730b20d332ec88daa1/frame-004.png",
+      "shared_scale_pixels_exact": true
+    }
+  ],
+  "note": "WCS roundtrip and exact common-scale pixel checks; no astrometric source-fit or calibrated photometry claim."
+}

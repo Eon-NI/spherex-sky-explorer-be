@@ -1,0 +1,78 @@
+{
+  "owned_processes": [
+    {
+      "name": "image_api",
+      "pid": 10916,
+      "command": [
+        "manage.py",
+        "runserver",
+        "127.0.0.1:8002",
+        "--noreload"
+      ]
+    },
+    {
+      "name": "image_worker",
+      "pid": 22200,
+      "command": [
+        "-m",
+        "celery",
+        "-A",
+        "eon_common.celery:app",
+        "worker",
+        "--pool=solo",
+        "--concurrency=1",
+        "-Q",
+        "image_processing",
+        "--hostname=eon-be02-validation@%h",
+        "--loglevel=INFO",
+        "--without-gossip",
+        "--without-mingle"
+      ]
+    }
+  ],
+  "existing_services_restarted": [],
+  "configuration_scope": "child process environment only",
+  "existing_eligible_workers": [
+    "eon-image-local@DESKTOP-E2NPNTE"
+  ],
+  "temporarily_paused_workers": [
+    "eon-image-local@DESKTOP-E2NPNTE"
+  ],
+  "validation_exit_code": 0,
+  "cleanup": [
+    {
+      "name": "image_worker",
+      "pid": 22200,
+      "stopped": true
+    },
+    {
+      "name": "image_api",
+      "pid": 10916,
+      "stopped": true
+    }
+  ],
+  "restored_workers": [
+    {
+      "name": "eon-image-local@DESKTOP-E2NPNTE",
+      "acknowledged": true
+    }
+  ],
+  "log_summaries": {
+    "image_api": [
+      "[14/Nov/2026 21:49:26] \"GET /health/ HTTP/1.1\" 200 47",
+      "[14/Nov/2026 21:49:36] \"GET /health/ HTTP/1.1\" 200 47",
+      "[14/Nov/2026 21:49:47] \"GET /api/v1/schema/ HTTP/1.1\" 200 6944",
+      "[14/Nov/2026 21:49:53] \"POST /api/v1/cutouts/ HTTP/1.1\" 202 123",
+      "[14/Nov/2026 21:49:53] \"GET /api/v1/cutouts/jobs/c19f23f7-5c6b-4528-b59f-f5ddcbac871e/ HTTP/1.1\" 200 108",
+      "[14/Nov/2026 21:49:57] \"GET /api/v1/cutouts/jobs/c19f23f7-5c6b-4528-b59f-f5ddcbac871e/ HTTP/1.1\" 200 108",
+      "[14/Nov/2026 21:50:00] \"GET /api/v1/cutouts/jobs/c19f23f7-5c6b-4528-b59f-f5ddcbac871e/ HTTP/1.1\" 200 108",
+      "[14/Nov/2026 21:50:03] \"GET /api/v1/cutouts/jobs/c19f23f7-5c6b-4528-b59f-f5ddcbac871e/ HTTP/1.1\" 200 462",
+      "[14/Nov/2026 21:50:03] \"GET /api/v1/cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d/metadata/ HTTP/1.1\" 200 1429",
+      "[14/Nov/2026 21:50:03] \"GET /api/v1/cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d/fits/ HTTP/1.1\" 200 4000320"
+    ],
+    "image_worker": [
+      "[2026-11-14 21:49:53,826: INFO/MainProcess] Task eon.image_processing.create_cutout[c19f23f7-5c6b-4528-b59f-f5ddcbac871e] received",
+      "[2026-11-14 21:50:02,158: INFO/MainProcess] Task eon.image_processing.create_cutout[c19f23f7-5c6b-4528-b59f-f5ddcbac871e] succeeded in 8.327098799985833s: {'cutout_id': '65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d', 'object_key': 'cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d.fits', 'metadata_url': '/api/v1/cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d/metadata/'}"
+    ]
+  }
+}

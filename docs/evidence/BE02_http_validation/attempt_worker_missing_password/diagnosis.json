@@ -1,0 +1,8 @@
+{
+  "job_id": "14dafacd-da86-447f-81a4-0353a06e759f",
+  "state": "FAILURE",
+  "exception_type": "django.db.utils.OperationalError",
+  "error": "fe_sendauth: no password supplied",
+  "stage": "CreateFitsCutout -> DjangoCutoutRepository.get before FITS acquisition",
+  "classification": "Existing worker process PostgreSQL credentials missing"
+}

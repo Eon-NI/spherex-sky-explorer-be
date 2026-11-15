@@ -1,0 +1,105 @@
+{
+  "checked_at_utc": "2026-11-15T01:12:23.720328+00:00",
+  "end_to_end_passed": false,
+  "endpoint": "http://127.0.0.1:9000",
+  "bucket": "eon-science",
+  "stages": {
+    "observation_health": {
+      "status": "passed",
+      "http_status": 200
+    },
+    "minio_health": {
+      "status": "passed",
+      "http_status": 200
+    },
+    "s3_bucket": {
+      "status": "passed"
+    },
+    "storage_only": {
+      "status": "passed",
+      "objects": [
+        {
+          "object_key": "validation/be02-storage-c83fa3e281194790a4728f51b87d7165/frame-000.png",
+          "bytes": 13638,
+          "content_type": "image/png",
+          "retrieval_identical": true,
+          "sha256": "cb815c16db11e6d268bffba8d28ea9f844440e84b505340004b642eb95d93cbe",
+          "png_dimensions": [
+            512,
+            560
+          ]
+        },
+        {
+          "object_key": "validation/be02-storage-c83fa3e281194790a4728f51b87d7165/frame-001.png",
+          "bytes": 13640,
+          "content_type": "image/png",
+          "retrieval_identical": true,
+          "sha256": "c33fa2e7721af4cf8355d9ba11c6c5f562821e92a435eab56d8ee3e8bbf7aca8",
+          "png_dimensions": [
+            512,
+            560
+          ]
+        },
+        {
+          "object_key": "validation/be02-storage-c83fa3e281194790a4728f51b87d7165/frame-002.png",
+          "bytes": 13586,
+          "content_type": "image/png",
+          "retrieval_identical": true,
+          "sha256": "e7f4faa1f3e6c9fb992b9719374c667c3ed28d537b4cae0f7c788224e6e5def4",
+          "png_dimensions": [
+            512,
+            560
+          ]
+        },
+        {
+          "object_key": "validation/be02-storage-c83fa3e281194790a4728f51b87d7165/frame-003.png",
+          "bytes": 13637,
+          "content_type": "image/png",
+          "retrieval_identical": true,
+          "sha256": "823555c0466e5f4923b94f7bec13049cdd9e063c4b7109a71323de2939859025",
+          "png_dimensions": [
+            512,
+            560
+          ]
+        },
+        {
+          "object_key": "validation/be02-storage-c83fa3e281194790a4728f51b87d7165/frame-004.png",
+          "bytes": 13914,
+          "content_type": "image/png",
+          "retrieval_identical": true,
+          "sha256": "be70cd4dc2917a55212aca842876d201ab1ac482e626af98e9f756a89a28d302",
+          "png_dimensions": [
+            512,
+            560
+          ]
+        }
+      ],
+      "note": "Existing real-data previews only; not a new Observation processing run."
+    },
+    "temporal_discovery": {
+      "status": "failed",
+      "http_status": 502,
+      "url": "http://127.0.0.1:8001/api/v1/observations/temporal/?ra_deg=210.80227&dec_deg=54.34895&size_deg=0.1&detector=SPHEREx-D2&limit=5",
+      "response": {
+        "detail": "IRSA TAP query unavailable"
+      },
+      "error_type": "HTTPError"
+    },
+    "product_resolution": {
+      "status": "not_run"
+    },
+    "fits_acquisition": {
+      "status": "not_run"
+    },
+    "fits_wcs_png_processing": {
+      "status": "not_run"
+    },
+    "output_uploads": {
+      "status": "not_run"
+    },
+    "retrieval_and_manifest": {
+      "status": "not_run"
+    }
+  },
+  "failed_stage": "temporal_discovery"
+}

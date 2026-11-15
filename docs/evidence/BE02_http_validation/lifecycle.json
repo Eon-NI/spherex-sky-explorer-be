@@ -1,0 +1,34 @@
+{
+  "owned_processes": [
+    {
+      "name": "image_api",
+      "pid": 21076,
+      "command": [
+        "manage.py",
+        "runserver",
+        "127.0.0.1:8002",
+        "--noreload"
+      ]
+    }
+  ],
+  "existing_services_restarted": [],
+  "configuration_scope": "child process environment only",
+  "error_checks_only": true,
+  "cleanup": [
+    {
+      "name": "image_api",
+      "pid": 21076,
+      "stopped": true
+    }
+  ],
+  "log_summaries": {
+    "image_api": [
+      "[14/Nov/2026 21:51:02] \"GET /health/ HTTP/1.1\" 200 47",
+      "[14/Nov/2026 21:51:02] \"POST /api/v1/cutouts/ HTTP/1.1\" 400 156",
+      "[14/Nov/2026 21:51:04] \"POST /api/v1/cutouts/ HTTP/1.1\" 400 53",
+      "[14/Nov/2026 21:51:04] \"GET /api/v1/cutouts/jobs/6dc60024-4e69-44b1-abfd-d2fed814959d/ HTTP/1.1\" 404 26",
+      "[14/Nov/2026 21:51:04] \"GET /api/v1/cutouts/not-a-hash/metadata/ HTTP/1.1\" 400 30",
+      "[14/Nov/2026 21:51:04] \"GET /api/v1/cutouts/0000000000000000000000000000000000000000000000000000000000000000/metadata/ HTTP/1.1\" 404 29"
+    ]
+  }
+}
