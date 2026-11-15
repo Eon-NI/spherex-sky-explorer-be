@@ -1,0 +1,288 @@
+{
+  "checked_at_utc": "2026-11-15T06:39:20.603083+00:00",
+  "passed": true,
+  "project": "eon-stack-test",
+  "protected_before": {
+    "eon-postgres-local": {
+      "id": "a45c27a9d50e6f7167b2d46eb2433a05689c7cc3c7599ef2b0f9155ff99f8fc3",
+      "started_at": "2026-11-14T22:24:43.851941637Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-redis-local": {
+      "id": "03cf15bf116061e978791194ba628a247b23b44e997c99765cf0d0ed5eb3d5db",
+      "started_at": "2026-11-14T22:59:54.959089872Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-minio-local": {
+      "id": "0628aebeaf79a51faf8d1ce766aa4e093601541b52e9c27ea4fae22aca30b85d",
+      "started_at": "2026-11-15T01:02:46.986785609Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-postgres-1": {
+      "id": "f6014d501ee0af1607182db4e776a764bce62658a7abac2788d2b084c12d85a6",
+      "started_at": "2026-11-15T05:27:54.967061966Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-redis-1": {
+      "id": "0b9f3c4222d87ace01700854edb78a8875c19d1e0d0323ae9467e4046ffbc839",
+      "started_at": "2026-11-15T05:27:54.759399798Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-minio-1": {
+      "id": "c7826e8831eb6102809f817bc960e544aa7688d40e407d39e6e41755df2f2fae",
+      "started_at": "2026-11-15T05:27:55.302630517Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-observation-1": {
+      "id": "638cbfc48eabe74b9570064eeec3e3881e3193641169d27dbbfc1ccd8007431a",
+      "started_at": "2026-11-15T06:32:47.441990906Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-image_processing-1": {
+      "id": "f828f2d706ed5a859f0a07eb0124ec3c9e2352b4f2e51dc01a143dc6f1d43dc5",
+      "started_at": "2026-11-15T06:32:47.088907598Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-spectral-1": {
+      "id": "99476bc27b4270273047f0ae6e29a573a8e21430b06e0c64425f40a75743c53e",
+      "started_at": "2026-11-15T06:32:46.32872039Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-jobs-1": {
+      "id": "5e1a83f155e1ac5cfe8f00f5d77b38df236eed56e253640dc736853c3e12ee76",
+      "started_at": "2026-11-15T06:32:47.901211229Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-observation_worker-1": {
+      "id": "02cc3190e95d7ac8e0db5d8b4e44523b038ccd060be995d15e61ee5637d17194",
+      "started_at": "2026-11-15T06:32:46.755753343Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-image_worker-1": {
+      "id": "691a73caccf281463909d297c6e37a5a309650051b43184ae15f43e064ec9a14",
+      "started_at": "2026-11-15T06:32:51.24359688Z",
+      "running": true,
+      "restarts": 0
+    }
+  },
+  "worker_checks": {
+    "worker": "celery@00b53e11e09a",
+    "queues": {
+      "celery@02cc3190e95d": [
+        "celery"
+      ],
+      "celery@00b53e11e09a": [
+        "spectral"
+      ],
+      "celery@691a73caccf2": [
+        "image_processing"
+      ]
+    },
+    "spectral_tasks": [
+      "eon.spectral.prepare_cube",
+      "eon.spectral.extract_spectrum"
+    ],
+    "pool": "celery.concurrency.prefork:TaskPool",
+    "concurrency": 2,
+    "successful_broker_probe": {
+      "task": "celery.accumulate",
+      "id": "f3958f60-635c-4fda-9671-2b8fda942b43",
+      "state": "SUCCESS",
+      "result": [
+        "compose-probe-2a56ea028e0d496db788745738963cf2"
+      ]
+    },
+    "spectral_dispatch": [
+      {
+        "task": "eon.spectral.prepare_cube",
+        "id": "f6bad3dc-4188-4a2b-ba30-6155a81f3161",
+        "state": "FAILURE",
+        "exception_type": "TypeError",
+        "note": "Intentionally missing required arguments; consumed and rejected before function body, no scientific download."
+      },
+      {
+        "task": "eon.spectral.extract_spectrum",
+        "id": "2594a454-600b-4514-b80f-17b37a924f98",
+        "state": "FAILURE",
+        "exception_type": "TypeError",
+        "note": "Intentionally missing required arguments; consumed and rejected before function body, no scientific download."
+      }
+    ]
+  },
+  "beat_observation_seconds": 60.38,
+  "beat_before": {
+    "eon-stack-test-observation_beat-1": {
+      "id": "5e8a9c22a66589704da606e9aea20f651a5ec7d1870affcee8b1ed58de048646",
+      "started_at": "2026-11-15T06:39:21.525544994Z",
+      "running": true,
+      "restarts": 0
+    }
+  },
+  "beat_after": {
+    "eon-stack-test-observation_beat-1": {
+      "id": "5e8a9c22a66589704da606e9aea20f651a5ec7d1870affcee8b1ed58de048646",
+      "started_at": "2026-11-15T06:39:21.525544994Z",
+      "running": true,
+      "restarts": 0
+    }
+  },
+  "beat_state": {
+    "uid": 1000,
+    "schedule_files": [
+      "celerybeat-schedule-shm",
+      "celerybeat-schedule",
+      "celerybeat-schedule-wal"
+    ],
+    "schedule_directory_writable": true,
+    "schedule": {
+      "task": "services.observation.infrastructure.tasks.sync_irsa",
+      "schedule": 86400.0
+    }
+  },
+  "beat_logs": [
+    "observation_beat-1  |     . scheduler -> celery.beat.PersistentScheduler",
+    "observation_beat-1  |     . db -> /home/eon/beat/celerybeat-schedule",
+    "observation_beat-1  | [2026-11-15 06:39:23,303: INFO/MainProcess] beat: Starting..."
+  ],
+  "http": {
+    "8001": 200,
+    "8002": 200,
+    "8003": 200,
+    "8004": 200,
+    "19000": 200
+  },
+  "protected_after": {
+    "eon-postgres-local": {
+      "id": "a45c27a9d50e6f7167b2d46eb2433a05689c7cc3c7599ef2b0f9155ff99f8fc3",
+      "started_at": "2026-11-14T22:24:43.851941637Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-redis-local": {
+      "id": "03cf15bf116061e978791194ba628a247b23b44e997c99765cf0d0ed5eb3d5db",
+      "started_at": "2026-11-14T22:59:54.959089872Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-minio-local": {
+      "id": "0628aebeaf79a51faf8d1ce766aa4e093601541b52e9c27ea4fae22aca30b85d",
+      "started_at": "2026-11-15T01:02:46.986785609Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-postgres-1": {
+      "id": "f6014d501ee0af1607182db4e776a764bce62658a7abac2788d2b084c12d85a6",
+      "started_at": "2026-11-15T05:27:54.967061966Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-redis-1": {
+      "id": "0b9f3c4222d87ace01700854edb78a8875c19d1e0d0323ae9467e4046ffbc839",
+      "started_at": "2026-11-15T05:27:54.759399798Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-minio-1": {
+      "id": "c7826e8831eb6102809f817bc960e544aa7688d40e407d39e6e41755df2f2fae",
+      "started_at": "2026-11-15T05:27:55.302630517Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-observation-1": {
+      "id": "638cbfc48eabe74b9570064eeec3e3881e3193641169d27dbbfc1ccd8007431a",
+      "started_at": "2026-11-15T06:32:47.441990906Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-image_processing-1": {
+      "id": "f828f2d706ed5a859f0a07eb0124ec3c9e2352b4f2e51dc01a143dc6f1d43dc5",
+      "started_at": "2026-11-15T06:32:47.088907598Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-spectral-1": {
+      "id": "99476bc27b4270273047f0ae6e29a573a8e21430b06e0c64425f40a75743c53e",
+      "started_at": "2026-11-15T06:32:46.32872039Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-jobs-1": {
+      "id": "5e1a83f155e1ac5cfe8f00f5d77b38df236eed56e253640dc736853c3e12ee76",
+      "started_at": "2026-11-15T06:32:47.901211229Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-observation_worker-1": {
+      "id": "02cc3190e95d7ac8e0db5d8b4e44523b038ccd060be995d15e61ee5637d17194",
+      "started_at": "2026-11-15T06:32:46.755753343Z",
+      "running": true,
+      "restarts": 0
+    },
+    "eon-stack-test-image_worker-1": {
+      "id": "691a73caccf281463909d297c6e37a5a309650051b43184ae15f43e064ec9a14",
+      "started_at": "2026-11-15T06:32:51.24359688Z",
+      "running": true,
+      "restarts": 0
+    }
+  },
+  "protected_unchanged": true,
+  "existing_worker_broker_probes": {
+    "celery": {
+      "id": "a2ed5c0b-94aa-4f79-98bf-8725d55b6872",
+      "state": "SUCCESS",
+      "task": "celery.accumulate"
+    },
+    "image_processing": {
+      "id": "56cc5dfb-0069-4cdd-8fa1-5f474b373557",
+      "state": "SUCCESS",
+      "task": "celery.accumulate"
+    }
+  },
+  "beat_final": {
+    "running": true,
+    "restarts": 0,
+    "started_at": "2026-11-15T06:39:21.525544994Z",
+    "schedule_volume": [
+      {
+        "name": "eon-stack-test_beatdata",
+        "destination": "/home/eon/beat"
+      }
+    ]
+  },
+  "tests": {
+    "linux_regression": {
+      "passed": 157,
+      "skipped": 6,
+      "seconds": 8.27
+    },
+    "windows_full_suite": "Collection blocked by pre-existing Spectral fcntl import; no portability code changed.",
+    "windows_smoke_passed": 5,
+    "ruff": "Passed"
+  },
+  "branch": "fix/eon-celery-compose",
+  "verified_develop_base": "2afba6cd0184dbd343edef5812dbc7e32c3598e6",
+  "remote_develop_verified": true,
+  "compose_config": "Passed",
+  "image_builds": {
+    "observation_beat": "Passed",
+    "spectral_worker": "Passed"
+  },
+  "root_cause": {
+    "beat": "PermissionError [Errno 13] opening relative celerybeat-schedule in root-owned /app as non-root eon",
+    "verified_uid": 1000,
+    "app_writable": false,
+    "home_writable": true,
+    "spectral": "Jobs routes two registered Spectral tasks to spectral; no Compose worker subscribed before this change."
+  }
+}
