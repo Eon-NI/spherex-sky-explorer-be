@@ -1,0 +1,15 @@
+{
+  "count": 1,
+  "results": [
+    {
+      "product_id": "803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03",
+      "artifact_uri": "ibe/data/spherex/dr1/level2/2025W19_2B/l2b-v27-2026-198/2/level2_2025W19_2B_0346_1D2_spx_l2b-v27-2026-198.fits",
+      "cutout_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W19_2B/l2b-v27-2026-198/2/level2_2025W19_2B_0346_1D2_spx_l2b-v27-2026-198.fits?center=210.80227%2C54.34895d&size=0.1",
+      "time_bounds_lower": 60805.711548,
+      "ra_deg": 210.80227,
+      "dec_deg": 54.34895,
+      "size_deg": 0.1,
+      "detector": "SPHEREx-D2"
+    }
+  ]
+}

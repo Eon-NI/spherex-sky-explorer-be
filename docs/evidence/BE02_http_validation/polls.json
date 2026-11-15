@@ -1,0 +1,46 @@
+[
+  {
+    "http_status": 200,
+    "response": {
+      "id": "c19f23f7-5c6b-4528-b59f-f5ddcbac871e",
+      "state": "running",
+      "result_key": null,
+      "error": null,
+      "result": null
+    }
+  },
+  {
+    "http_status": 200,
+    "response": {
+      "id": "c19f23f7-5c6b-4528-b59f-f5ddcbac871e",
+      "state": "running",
+      "result_key": null,
+      "error": null,
+      "result": null
+    }
+  },
+  {
+    "http_status": 200,
+    "response": {
+      "id": "c19f23f7-5c6b-4528-b59f-f5ddcbac871e",
+      "state": "running",
+      "result_key": null,
+      "error": null,
+      "result": null
+    }
+  },
+  {
+    "http_status": 200,
+    "response": {
+      "id": "c19f23f7-5c6b-4528-b59f-f5ddcbac871e",
+      "state": "succeeded",
+      "result_key": "cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d.fits",
+      "error": null,
+      "result": {
+        "cutout_id": "65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d",
+        "object_key": "cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d.fits",
+        "metadata_url": "/api/v1/cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d/metadata/"
+      }
+    }
+  }
+]

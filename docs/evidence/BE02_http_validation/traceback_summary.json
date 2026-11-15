@@ -1,0 +1,26 @@
+{
+  "source": "User-provided running Image Processing logs",
+  "submission": {
+    "local_timestamps": [
+      "2026-11-14 21:34:39",
+      "2026-11-14 21:35:42"
+    ],
+    "call_chain": [
+      "CutoutRequestView.post",
+      "ObservationApiResolver.get",
+      "urllib.request.urlopen"
+    ],
+    "error": "URLError -> ConnectionRefusedError (WinError 10061)",
+    "jobs_submission_reached": false
+  },
+  "status_proxy": {
+    "local_timestamp": "2026-11-14 21:35:44",
+    "call_chain": [
+      "CutoutJobStatusView.get",
+      "JobApiReader.get",
+      "urllib.request.urlopen"
+    ],
+    "error": "URLError -> ConnectionRefusedError (WinError 10061)"
+  },
+  "limitation": "Destination URLs are absent from these tracebacks; do not infer exact host/port or API token."
+}

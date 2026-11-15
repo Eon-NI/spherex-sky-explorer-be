@@ -1,0 +1,17 @@
+Commands executed, backend repository root:
+.venv\Scripts\python.exe -B -u -m scripts.recover_be02_http
+(first actual worker execution failed due missing PostgreSQL password; preserved under attempt_worker_missing_password/)
+.venv\Scripts\python.exe -B -u -m scripts.recover_be02_http --isolate-worker
+(complete real HTTP success)
+.venv\Scripts\python.exe -B -u -m scripts.recover_be02_http --error-checks-only
+(seven invalid/auth probes, no new jobs or FITS downloads)
+.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp C:\Users\Angle\AppData\Local\Temp\eon-be02-recovery-tests --tb=short
+142 passed, 6 skipped in 3.81s
+.venv\Scripts\python.exe -B -m unittest discover -s tests -p smoke_stdlib.py
+5 passed
+.venv\Scripts\python.exe -B -m ruff check --no-cache scripts/recover_be02_http.py scripts/validate_be02_http.py
+All checks passed
+git diff --check
+
+Owned child commands and cleanup: successful_pipeline_lifecycle.json and lifecycle.json
+All credentials were loaded privately into process memory; no .env or Compose changes.

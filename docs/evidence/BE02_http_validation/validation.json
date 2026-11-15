@@ -1,0 +1,192 @@
+{
+  "checked_at_utc": "2026-11-15T03:49:36.378759+00:00",
+  "http_cutout_flow_passed": true,
+  "native_tap_verified": false,
+  "stages": {
+    "postgresql": {
+      "status": "Passed",
+      "database": "eon_image_processing",
+      "query": "SELECT 1"
+    },
+    "redis": {
+      "status": "Passed",
+      "endpoint": "127.0.0.1:6379/0"
+    },
+    "observation_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "image_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "jobs_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "minio_health": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "s3_bucket": {
+      "status": "Passed",
+      "bucket": "eon-science"
+    },
+    "celery_worker": {
+      "status": "Passed",
+      "workers": [
+        "eon-be02-validation@DESKTOP-E2NPNTE"
+      ],
+      "queue": "image_processing",
+      "task": "eon.image_processing.create_cutout"
+    },
+    "openapi": {
+      "status": "Passed",
+      "http_status": 200,
+      "version": "3.0.3"
+    },
+    "discovery": {
+      "status": "Passed",
+      "http_status": 200,
+      "url": "http://127.0.0.1:8001/api/v1/observations/temporal/?ra_deg=210.80227&dec_deg=54.34895&size_deg=0.1&detector=SPHEREx-D2&limit=1",
+      "product_id": "803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03"
+    },
+    "product_detail": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "submission": {
+      "status": "Passed",
+      "http_status": 202,
+      "job_id": "c19f23f7-5c6b-4528-b59f-f5ddcbac871e",
+      "status_url": "/api/v1/cutouts/jobs/c19f23f7-5c6b-4528-b59f-f5ddcbac871e/"
+    },
+    "async_execution": {
+      "status": "Passed",
+      "state": "succeeded",
+      "poll_count": 4,
+      "cutout_id": "65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d",
+      "object_key": "cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d.fits",
+      "note": "A first-poll success may be idempotent reuse; no fresh execution inferred from that alone."
+    },
+    "metadata": {
+      "status": "Passed",
+      "http_status": 200
+    },
+    "fits_download": {
+      "status": "Passed",
+      "http_status": 200,
+      "bytes": 4000320,
+      "sha256": "0143817ceec1a56d8ec85b7f8f5d760e20b3376a7afd73bf637657ff36eb980b",
+      "content_type": "application/fits"
+    },
+    "scientific_validation": {
+      "status": "Passed",
+      "obs_id": "2025W19_2B_0346_1",
+      "detector": "2",
+      "image_shape": [
+        59,
+        59
+      ],
+      "image_unit": "MJy / sr",
+      "timestamp": "2025-05-10T17:04:37.741Z",
+      "time_provenance": {
+        "time_keyword": "DATE-OBS",
+        "time_original": "2025-05-10T17:04:37.741",
+        "time_scale": "utc",
+        "timesys_default": false
+      },
+      "wavelength_um": 1.5064212841578182,
+      "bandwidth_um": 0.036952739361587945,
+      "metadata_matches_download": true,
+      "region_roundtrip": [
+        210.80226999928283,
+        54.34894999983927
+      ]
+    },
+    "minio_retrieval": {
+      "status": "Passed",
+      "bucket": "eon-science",
+      "object_key": "cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d.fits",
+      "bytes": 4000320,
+      "sha256": "0143817ceec1a56d8ec85b7f8f5d760e20b3376a7afd73bf637657ff36eb980b",
+      "byte_identical": true,
+      "content_type": "application/fits",
+      "last_modified_utc": "2026-11-15T03:50:02+00:00"
+    },
+    "schema_comparison": {
+      "status": "Passed",
+      "discrepancies": [
+        {
+          "method": "POST",
+          "path": "/api/v1/cutouts/",
+          "observed_status_missing_from_openapi": 400
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/cutouts/jobs/{job_id}/",
+          "observed_status_missing_from_openapi": 404
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/cutouts/{cutout_id}/metadata/",
+          "observed_status_missing_from_openapi": 400
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/cutouts/{cutout_id}/metadata/",
+          "observed_status_missing_from_openapi": 404
+        }
+      ],
+      "note": "Successful request/responses validate against published schema. Observed 400/404 error responses are not all documented; result/fits are generic dictionaries. No endpoint/contract changes."
+    },
+    "internal_authentication": {
+      "status": "Passed",
+      "evidence": "error_checks.json",
+      "note": "Unauthenticated Jobs probe returned 401; matching-token invalid payload returned 400; actual forwarded valid submission returned 202."
+    },
+    "error_handling": {
+      "status": "Passed",
+      "checks": 7,
+      "evidence": "error_checks.json"
+    },
+    "regression_tests": {
+      "status": "Passed",
+      "passed": 142,
+      "skipped": 6,
+      "seconds": 3.81
+    },
+    "smoke_tests": {
+      "status": "Passed",
+      "passed": 5
+    },
+    "helper_lint": {
+      "status": "Passed"
+    }
+  },
+  "poll_timeout_seconds": 240,
+  "notes": [
+    "Recovery wrapper started temporary Image Processing API and isolated solo worker with process-local settings; see successful_pipeline_lifecycle.json for cleanup and original-worker restoration.",
+    "Fresh BE-01 HTTP request; cache/upstream discovery route is not exposed.",
+    "Separate from application timelapse and BE-03 frontend validation."
+  ],
+  "recovered_issues": [
+    {
+      "issue": "No Image Processing listener on port 8002",
+      "resolution": "Started owned --noreload API with localhost endpoints and existing credentials in process memory."
+    },
+    {
+      "issue": "Existing worker task failed with OperationalError: fe_sendauth: no password supplied",
+      "failed_job_id": "14dafacd-da86-447f-81a4-0353a06e759f",
+      "resolution": "Inspected idle/empty state, temporarily canceled its queue consumer, started configured solo worker, restored original consumer afterward."
+    }
+  ],
+  "lifecycle": {
+    "pipeline_evidence": "successful_pipeline_lifecycle.json",
+    "error_check_lifecycle": "lifecycle.json",
+    "owned_processes_stopped": true,
+    "original_worker_subscription_restored": true,
+    "warning": "Original worker still needs PostgreSQL credentials in its own launch environment; it was not silently reconfigured."
+  },
+  "scope": "Real single-cutout HTTP workflow only. Application timelapse validation and BE-03 frontend are separate; Jobs public allowlist supports create_cutout, not render_timelapse."
+}

@@ -7,15 +7,15 @@ BE-02 now provides a bounded processing use case and Celery adapter for:
 **Observation references -> authorized IRSA cutouts -> FITS/WCS -> chronological
 PNG frames -> S3 objects -> result manifest -> BE-03.**
 
-The implementation preserves the agreed manifest fields and introduces no job
-lifecycle endpoint. Production-path references are always resolved through BE-01
-HTTP. Real-data preview evidence demonstrates five PNGs and one fresh IRSA cutout;
-it does not demonstrate the complete service chain. In the latest follow-up,
-Observation and MinIO health endpoints both returned HTTP 200 and the configured
-eon-science bucket passed real upload/retrieval checks. However, Observation's
-TAP-backed temporal discovery returned HTTP 502 twice, preventing valid product IDs
-from being obtained. **End-to-end acceptance remains blocked at temporal discovery;
-S3 connectivity is no longer the blocker.**
+The complete bounded application pipeline has now passed against the corrected
+Observation endpoint, real IRSA FITS cutouts and local MinIO (`eon-science`). Five
+BE-01 references were resolved over HTTP, downloaded, aligned, rendered, uploaded
+and retrieved with a valid BE-03 manifest. **end_to_end_passed=true** applies to this
+real BE-02 application pipeline. Celery dispatch and Jobs lifecycle were not tested.
+Native TAP remains unavailable; corrected discovery supports bounded SIA2 fallback.
+See the current revalidation below; earlier blocked runs remain historical evidence.
+The separate real HTTP cutout workflow also passed after local environment recovery;
+see section 17 for job, cutout, storage, error-handling and cleanup evidence.
 
 ## 2. Scope and exclusions
 
@@ -370,7 +370,7 @@ run because services were unavailable. In the follow-up the prerequisite discove
 failed before a request file with real product IDs could be produced; the complete
 pytest integration therefore still could not run. Default skipped tests are not successes.
 
-### Follow-up integration validation: November 14, 2026 (America/Managua)
+### Historical blocked follow-up: November 14, 2026 (superseded below)
 
 Command executed from the repository root with the existing backend venv:
 
@@ -449,22 +449,97 @@ backed discovery (or supply genuine previously discovered BE-01 IDs), then rerun
 helper/full opt-in test to verify FITS acquisition, processing-output persistence and
 the actual retrieved BE-03 manifest. Do not replace those IDs with SIA/local fixture hashes.
 
+### Current end-to-end revalidation: November 14, 2026 local / November 15 UTC
+
+Executed on `feature/EON-BE-02`, HEAD `3e5e15b`. `git merge-base --is-ancestor
+ eb675a9 HEAD` returned zero, confirming the Observation fallback fix is included.
+The working tree was clean before this validation. No service was restarted.
+
+Commands executed (existing venv, repository root):
+
+```cmd
+.venv\Scripts\python.exe -B -u -m scripts.validate_be02_integration --load-env --output-dir docs/evidence/BE02_revalidation
+.venv\Scripts\python.exe -B -u -m scripts.audit_be02_revalidation
+.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp C:\Users\Angle\AppData\Local\Temp\eon-be02-revalidation-tests --tb=short
+.venv\Scripts\python.exe -B -m unittest discover -s tests -p smoke_stdlib.py
+.venv\Scripts\python.exe -B -m ruff check --no-cache scripts/audit_be02_revalidation.py
+```
+
+The helpers read only missing S3 credentials from `.env` into process memory;
+credentials are never recorded. The audit helper enables `EON_RUN_BE02_LIVE=1`
+and sets `EON_BE02_REQUEST_FILE` to the saved real request before running
+`tests/integration/test_timelapse_live.py` in a child process. This live test executes
+the complete production adapter pipeline again for the same five products and
+validates retrieval. It deliberately retains/reuses this validation job prefix.
+
+[Current validation](evidence/BE02_revalidation/validation.json),
+[real request](evidence/BE02_revalidation/request.json),
+[result manifest](evidence/BE02_revalidation/manifest.json),
+[object audit](evidence/BE02_revalidation/object_audit.json) and
+[live pytest output](evidence/BE02_revalidation/live_pytest.txt) are the current evidence.
+The previous `BE02_integration` files remain historical failed evidence.
+
+The bounded HTTP request used M101 RA=210.80227, Dec=54.34895, size=0.1 degrees,
+SPHEREx-D2, limit=5. It returned HTTP 200 and five genuine DR1 references, all resolved
+through `ObservationApiResolver`. This is a fresh endpoint request, not proof of a
+cache miss or new upstream query: the response does not expose the discovery route.
+The merged implementation supports bounded SIA2 fallback. Native TAP was not
+re-probed and is not reported as successful.
+
+Five real cutouts (each below 8 MiB) produced five chronological PNGs spanning
+`2025-05-10T17:04:37.741Z` through `2025-05-10T21:58:09.061Z`. There are five distinct
+acquisition times on the same UTC date; no claim of different calendar dates or
+visible motion is made. FITS DATE-OBS/TIMESYS determine output times. The largest
+catalogue MJD-versus-FITS discrepancy was 0.03720 seconds. The legacy provenance
+field `tap_time_interpretation` remains conservative for wire compatibility; it does
+not mean that native TAP supplied this run or that FITS DATE is an observation time.
+
+The audit retrieved all five retained source FITS and checked their SHA-256 against
+processing provenance. It revalidated celestial mappings onto the common 59x59 TAN
+grid (north up/east left); maximum source-WCS sky roundtrip error was 0.000002017
+arcsec. This tests coordinate consistency, not external astrometric accuracy or
+source-centroid registration. Shared pooled limits were vmin=0.6057568590745926,
+vmax=6.1455548003325635 MJy/sr, with asinh a=0.1. Every retrieved PNG science panel
+exactly matched the independently reconstructed shared-scale pixels, including the
+orientation and invalid-coverage colour. Five retrieved PNGs total 67,368 bytes;
+all are valid 512x560 RGB PNGs with `Content-Type: image/png`. Copies and hashes are
+saved alongside the evidence. The stored final JSON manifest equals the returned
+manifest, preserves the BE-03 required fields and has ascending timestamps/indices.
+
+Astropy emitted the existing SIP diagnostic while constructing the alternate
+spectral WCS. The renderer clears SIP on that spectral WCS and preserves the spatial
+WCS. The real numerical checks passed; no header alteration or new WCS policy was
+introduced. FLAGS labels are retained but bits are not interpreted as a calibrated
+mask. Varying central wavelengths and incomplete coverage remain explicit provenance;
+a shared scale does not establish photometric variability or spectral equivalence.
+
+All required application-pipeline stages passed; no application stage failed or was
+skipped. Celery broker/worker dispatch, Jobs lifecycle and five other opt-in integrations
+were not run. The default regression suite reported **142 passed, 6 skipped**;
+the BE-02 live test was enabled separately and reported **1 passed in 33.70s**.
+Five smoke checks and focused lint passed. No changes were made to compose.yaml, .env, Observation, Jobs or unrelated
+services. No commit or push was performed.
+
 ## 13. Known limitations and acceptance checklist
 
-| Acceptance criterion | Evidence/status |
+| Acceptance criterion | Current evidence/status |
 | --- | --- |
-| Resolve a real product through BE-01 | Blocked: health is 200, but temporal discovery returned 502 twice; no real IDs obtained |
-| Acquire at least one real SPHEREx cutout | Passed: one fresh bounded IRSA download in preview |
-| Generate PNG from real data | Passed: five real previews |
-| Generate 5-10 chronological real frames | Five historical real previews verified; current BE-01 pipeline not run because discovery failed |
-| Upload frames to configured bucket | Storage adapter passed for five real preview PNGs in eon-science; new processing outputs still blocked by discovery |
-| Produce correct agreed manifest | Five focused deterministic checks passed in follow-up; actual processing manifest generation/retrieval not reached |
-| BE-03 consumes agreed fields unchanged | Required fields preserved/tested; task allowlist/lifecycle integration belongs to BE-03 |
-| Bound resources and handle failure | Automated tests cover these guards |
-| Automated suite passes | Previous full suite: 132 passed/6 skipped; follow-up: five focused deterministic checks passed |
-| Document reproducible pipeline | This document, command, preview script and live test |
+| Merged Observation discovery fix present | Passed: branch feature/EON-BE-02, HEAD 3e5e15b; eb675a9 is an ancestor |
+| Observation and MinIO accessible | Passed: both health endpoints HTTP 200; head_bucket succeeded |
+| Resolve real products through BE-01 HTTP | Passed: five IDs from a fresh bounded temporal endpoint request |
+| Acquire real SPHEREx cutouts | Passed: five fresh IRSA downloads, 19,990,080 bytes total |
+| Common celestial grid | Passed: 59x59 ICRS TAN, 6.2 arcsec/pixel; audited source WCS roundtrips |
+| Shared visual scale | Passed: pooled percentiles and exact PNG science-panel pixel audit |
+| Chronological real PNG frames | Passed: five distinct FITS acquisition times, 512x560 RGB PNGs |
+| Store and retrieve outputs | Passed: five source FITS, five PNGs and final manifest in eon-science |
+| Agreed BE-03 result fields | Passed: job_id/status/frames and index/product_id/timestamp/object_key; retrieved manifest equals returned result |
+| Regression and live tests | Passed: 142 default tests, five smoke checks, plus the separately enabled live test; six optional tests skipped in default run |
+| BE-03 worker/lifecycle integration | Skipped: outside this direct processing validation; no Jobs changes |
+| Native TAP discovery | Not passed: remains a known timeout; no native success claimed |
 
-No full end-to-end acceptance is claimed. No calibrated photometry/quality mask,
+The bounded BE-02 application pipeline is accepted for this real run. This does not
+establish Celery/Jobs orchestration acceptance. No calibrated photometry/quality mask,
+
 PSF matching, background subtraction or motion detection is implemented. A shared
 scale does not make different spectral bands scientifically interchangeable. Source
 VARIANCE is preserved, not propagated as resampling uncertainty. Retries can leave
@@ -496,9 +571,9 @@ BE-03 should register/allowlist the processing task, provide the existing job ID
 validate bounded inputs, enqueue on image_processing, expose result/state and sign
 frame keys only after successful completion. The frontend should consume ordered
 frames/timestamps, respect irregular acquisition gaps, and surface provenance and
-spectral/coverage limitations. MinIO and bucket access are now verified. Restore
-BE-01 TAP discovery or supply genuine stored IDs, then run the complete opt-in test
-before declaring the hackathon MVP done.
+spectral/coverage limitations. MinIO and bucket access are now verified. Validate
+BE-03 orchestration separately. The corrected BE-01 endpoint and bounded BE-02
+application pipeline are now verified; native TAP success is not claimed.
 
 Markdown changes: README.md was translated from Spanish to English because its
 shared FITS/S3/setup description required updating. docs/BACKEND_WORKFLOW.md was
@@ -534,3 +609,373 @@ docs/evidence/BE02_integration/discovery.json and
  docs/evidence/BE02_integration/validation.json. Only this document and validation
 artifacts/helper were added or updated during the follow-up; compose.yaml, .env,
 Observation and Jobs were not modified. No commit or push was performed.
+
+## 16. Historical HTTP cutout attempts (superseded by section 17)
+
+**HTTP cutout acceptance remains blocked; http_cutout_flow_passed=false.** This does
+not change the previous successful application-level timelapse validation. Neither
+a complete HTTP cutout flow nor the BE-03 frontend workflow is accepted by this run.
+
+The operator confirmed a correctly routed worker. The resumed validation independently
+verified `eon-image-local@DESKTOP-E2NPNTE` consumes `image_processing` and registers
+`eon.image_processing.create_cutout`. However, `GET http://127.0.0.1:8004/health/`
+failed with `requests.ConnectionError` on both preflight attempts. There was no HTTP
+response code from Jobs. No service was started, restarted or reconfigured.
+
+| Stage | Result |
+| --- | --- |
+| PostgreSQL, eon_image_processing SELECT 1 | Passed |
+| Redis 127.0.0.1:6379/0 PING | Passed |
+| Observation :8001 health | Passed, HTTP 200 |
+| Image Processing :8002 health | Passed, HTTP 200 |
+| MinIO health and eon-science head_bucket | Passed; health HTTP 200 |
+| Correct queue and task registration | Passed, live Celery inspect |
+| Jobs :8004 connectivity | Failed, ConnectionError; no HTTP response |
+| Bounded real temporal discovery, limit=1 | Passed, HTTP 200 |
+| Real product detail | Passed, HTTP 200; identical to discovery result |
+| Image API OpenAPI retrieval | Passed, HTTP 200; OpenAPI 3.0.3 snapshot saved |
+| HTTP cutout POST and API-side product resolution | Blocked; zero POSTs sent because Jobs is unavailable |
+| Job lifecycle, FITS processing and persistence | Blocked; no job_id/cutout_id was returned or invented |
+| Metadata and FITS download endpoints | Blocked; no actual cutout identifier available |
+| Actual payload versus OpenAPI comparison | Blocked; no HTTP cutout responses yet |
+
+The genuine product is
+`803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03`, from DR1 D2.
+The saved request uses RA=210.80227, Dec=54.34895 and size=0.1 degrees. This fresh
+HTTP discovery request does not prove a cache miss or native TAP success. Native
+TAP remains unverified; bounded SIA2 fallback is acceptable. Direct product-detail
+success does not establish resolution from inside the running Image Processing API.
+
+Commands executed:
+
+```cmd
+.venv\Scripts\python.exe -B -u -m scripts.validate_be02_http
+.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp C:\Users\Angle\AppData\Local\Temp\eon-be02-http-tests --tb=short
+.venv\Scripts\python.exe -B -m unittest discover -s tests -p smoke_stdlib.py
+.venv\Scripts\python.exe -B -m ruff check --no-cache scripts/validate_be02_http.py
+```
+
+Results: **142 passed, 6 optional integrations skipped**, five smoke checks passed,
+and final helper lint passed. These automated regressions include synthetic/mock
+ports; they do not establish real HTTP/Celery/FITS/S3 cutout completion. The live
+infrastructure, Celery inspection and discovery checks above are separate real checks.
+
+[Stage evidence](evidence/BE02_http_validation/validation.json),
+[discovery](evidence/BE02_http_validation/discovery.json),
+[product detail](evidence/BE02_http_validation/product.json),
+[request](evidence/BE02_http_validation/request.json),
+[OpenAPI snapshot](evidence/BE02_http_validation/openapi.json) and
+[commands](evidence/BE02_http_validation/commands.txt) contain no credentials.
+
+The helper consumes existing missing PostgreSQL/S3 credentials privately from .env;
+localhost overrides apply only to its process, not the running APIs/worker. Its
+preflight requires Jobs on :8004; it does not bypass Jobs or submit directly to Celery.
+The downstream helper path is not yet live-verified. On a complete run it allows at
+most one POST, polls at most 80 times within a 240-second monotonic budget and caps
+retrieved FITS at 8 MiB. It distinguishes idempotent first-poll success from evidence
+of fresh execution. API and worker endpoint environments still require operator
+confirmation; health alone exposes no Redis/Observation settings.
+
+Jobs must be reachable before resuming. In a separate Windows CMD with the existing
+matching EON_INTERNAL_TOKEN and database credentials loaded, the required service
+startup is (operator action; **not executed here**):
+
+```cmd
+call .venv\Scripts\activate.bat
+set "SERVICE_NAME=jobs"
+set "POSTGRES_HOST=127.0.0.1"
+set "POSTGRES_DB=eon_jobs"
+set "REDIS_URL=redis://127.0.0.1:6379/0"
+python -B manage.py runserver 127.0.0.1:8004 --noreload
+```
+
+The Image Processing API must use JOB_SERVICE_URL=http://127.0.0.1:8004 and
+OBSERVATION_SERVICE_URL=http://127.0.0.1:8001. After confirming configuration, rerun
+the helper; inspect actual result IDs, lifecycle and downloaded FITS before accepting
+the HTTP flow. No implementation defect has been demonstrated: this run stops at
+an unavailable infrastructure dependency. No application correction, duplicate
+endpoint or contract change was introduced. compose.yaml, .env, Observation, Jobs
+and existing services were untouched. No commit, push or merge was performed.
+
+### Resumed HTTP validation after Jobs startup (November 15, 2026 UTC)
+
+**Current result: http_cutout_flow_passed=false.** The former unavailable-Jobs
+preflight blocker is resolved. The failing stage is now the public Image Processing
+submission: one real `POST /api/v1/cutouts/` returned HTTP **502**, with
+`{"detail":"Job service unavailable"}`. No job_id/status_url was returned. There
+was no valid-submission retry, asynchronous polling, FITS download or new cutout
+persistence. The full HTTP cutout chain remains unverified.
+
+| Stage | Actual resumed outcome |
+| --- | --- |
+| PostgreSQL SELECT 1 and Redis PING | Passed |
+| Observation, Image Processing, Jobs and MinIO health | Passed, all HTTP 200 |
+| eon-science head_bucket | Passed |
+| Worker image_processing queue/create_cutout registration | Passed, eon-image-local worker |
+| Image Processing and Jobs OpenAPI retrieval | Passed, both HTTP 200 |
+| Bounded BE-01 discovery, limit=1, and real detail | Passed, both HTTP 200 |
+| Public HTTP cutout submission | Failed, HTTP 502; no job_id/cutout_id |
+| Direct Jobs authentication with existing diagnostic token | Failed, HTTP 401 |
+| Jobs -> Celery execution and FITS acquisition | Blocked by submission failure |
+| New cutout storage, metadata/FITS retrieval | Blocked; no result identifiers available |
+| Successful cutout response/schema comparison | Blocked; no successful response payloads |
+| Regression/smoke/lint | Passed: 142 tests, five smoke, focused lint; six optional tests skipped |
+
+The product remains the genuine DR1/D2 reference
+`803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03`, discovered through
+a fresh bounded HTTP request for M101 (RA=210.80227, Dec=54.34895, size=0.1). No
+native TAP success or cache miss is inferred. The actual request/response is saved
+in request.json/submission.json. Previous blocked preflight evidence is retained in
+previous_blocked_validation.json; validation.json now describes this resumed run.
+
+Executed commands:
+
+```cmd
+.venv\Scripts\python.exe -B -u -m scripts.validate_be02_http
+.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp C:\Users\Angle\AppData\Local\Temp\eon-be02-http-resumed-tests --tb=short
+.venv\Scripts\python.exe -B -m unittest discover -s tests -p smoke_stdlib.py
+.venv\Scripts\python.exe -B -m ruff check --no-cache scripts/validate_be02_http.py
+```
+
+The current [validation.json](evidence/BE02_http_validation/validation.json),
+[submission.json](evidence/BE02_http_validation/submission.json),
+[diagnostics.json](evidence/BE02_http_validation/diagnostics.json) and
+[commands.txt](evidence/BE02_http_validation/commands.txt) preserve non-sensitive
+outcomes. Additional bounded probes deliberately used invalid payloads so they
+could not enqueue work:
+
+- Real product with mismatched size=0.09 through Image Processing: HTTP 502,
+  expected 400 after successful product resolution.
+- Unknown random job UUID through Image Processing: HTTP 502, expected 404 if
+  its Jobs forwarding works.
+- Invalid cutout identifier: HTTP 400 as expected.
+- Empty Jobs payload without authentication: HTTP 401 as expected.
+- Empty Jobs payload with a nonempty existing diagnostic token loaded privately:
+  HTTP 401. Correct authentication would allow serializer rejection (400), not
+  enqueue an empty payload.
+
+These observations demonstrate that internal forwarding/authentication is not
+validated. They suggest local process configuration problems: direct service health
+does not verify the URLs/token inherited by the running Image Processing process.
+The diagnostic token was rejected by Jobs, but this does not prove which token the
+running Image Processing API holds. Its generic catch also covers Observation
+resolution, so the 502 label alone cannot identify whether Observation, Jobs URL,
+authentication or another adapter error is the immediate cause. A redacted traceback
+was requested from the running API. No exact underlying exception is invented.
+
+No FITS-processing defect has been demonstrated and no speculative application
+correction was made. Verify the running API's OBSERVATION_SERVICE_URL=:8001,
+JOB_SERVICE_URL=:8004, localhost Redis and the matching EON_INTERNAL_TOKEN shared
+with Jobs before retrying. Existing workers/services were not changed or restarted;
+.env, compose.yaml, Observation and Jobs were untouched. No commit, push or merge.
+
+The regression suite uses synthetic/mocked dependencies where applicable and its
+six skipped integrations are not passed live tests. The real checks above stop at
+submission. Published Jobs supports create_cutout only: registration of
+render_timelapse in a worker does not expose it through Jobs/Swagger. The earlier
+successful application-level timelapse result remains separate; BE-03 frontend
+completion is not claimed.
+
+### Confirmed exception from operator-provided Image Processing logs
+
+The supplied running-process traceback resolves the previously hidden immediate
+cause. At local times 2026-11-14 21:34:39 and 21:35:42, `CutoutRequestView.post`
+failed in `ObservationApiResolver.get` -> `urllib.request.urlopen`, raising
+`urllib.error.URLError` wrapping `ConnectionRefusedError: WinError 10061`.
+**The public POST failed during Observation product resolution, before Jobs
+submission or authentication.** The generic response `Job service unavailable`
+therefore misidentifies the dependency for this failure.
+
+A separate 21:35:44 traceback confirms the job-status proxy also failed with
+WinError 10061 in `JobApiReader.get`. These are internal HTTP connectivity failures;
+the target URLs are not printed in either traceback. Exact endpoint values remain
+unverified, so port 8000 is not asserted as the observed destination. The direct
+401 diagnostic-token probe is a separate authentication problem; it did not cause
+the POST failure shown in these logs.
+
+See [traceback summary](evidence/BE02_http_validation/traceback_summary.json).
+Set the correct URLs in the terminal that launches Image Processing, then restart
+that API under the operator's control. Changing variables in another terminal does
+not update the running process. Before launch, the same terminal can verify only
+non-sensitive adapter settings:
+
+```cmd
+set "SERVICE_NAME=image_processing"
+set "OBSERVATION_SERVICE_URL=http://127.0.0.1:8001"
+set "JOB_SERVICE_URL=http://127.0.0.1:8004"
+set "REDIS_URL=redis://127.0.0.1:6379/0"
+set "S3_ENDPOINT_URL=http://127.0.0.1:9000"
+python -B -c "import os; from services.image_processing.infrastructure.clients import ObservationApiResolver, JobApiReader; print('Observation:', ObservationApiResolver().base_url); print('Jobs:', JobApiReader().base_url); print('Redis:', os.environ.get('REDIS_URL'))"
+python -B manage.py runserver 127.0.0.1:8002 --noreload
+```
+
+These are proposed operator commands, not commands executed by this validation.
+Existing database/S3 credentials must remain loaded, and EON_INTERNAL_TOKEN must
+match Jobs without printing it. The worker needs its own correct Observation/S3/
+Redis environment. No running process or configuration file was modified.
+HTTP cutout acceptance remains false pending configuration confirmation and a
+successful real retry.
+
+### Latest retry after reported configuration correction
+
+**http_cutout_flow_passed=false.** The actual retry stopped earlier than the previous
+submission failure: `GET http://127.0.0.1:8002/health/` raised
+`requests.ConnectionError` with connection refusal (WinError 10061). A separate
+bounded recheck reproduced the refusal; no HTTP response was received from Image
+Processing. The reported restart does not establish a reachable listener on :8002.
+
+PostgreSQL SELECT 1 and Redis PING passed. Observation :8001, Jobs :8004 and MinIO
+:9000 health rechecks each returned HTTP 200. Authentication, Celery worker inspection,
+fresh discovery, submission, processing, new storage and FITS/metadata retrieval
+were not reached in this attempt. No jobs were submitted and no FITS downloaded.
+This is a local service-listener/connectivity failure; no new application defect
+or authentication outcome is inferred. The older diagnostics in this directory
+remain historical; they are not results from this retry.
+
+Executed:
+
+```cmd
+.venv\Scripts\python.exe -B -u -m scripts.validate_be02_http
+.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp C:\Users\Angle\AppData\Local\Temp\eon-be02-http-corrected-tests --tb=short
+.venv\Scripts\python.exe -B -m unittest discover -s tests -p smoke_stdlib.py
+```
+
+A supplementary requests health probe used connection/read timeouts (3,5) seconds,
+once per endpoint, with proxies disabled. Results are saved in
+[connectivity_recheck.json](evidence/BE02_http_validation/connectivity_recheck.json);
+[validation.json](evidence/BE02_http_validation/validation.json) records the current
+failed stage. Regression results: **142 passed, 6 optional skipped**; five smoke
+checks passed. These regressions do not establish real HTTP cutout success.
+
+The operator must restore Image Processing listening on 127.0.0.1:8002 before
+another real attempt. No running service, .env, compose.yaml, Observation, Jobs or
+application code was changed. No commit or push. Previous successful application
+ timelapse validation remains separate; no public timelapse/BE-03 completion claim.
+
+## 17. Accepted real HTTP cutout workflow after autonomous recovery
+
+**http_cutout_flow_passed=true** for this bounded real HTTP run. This is separate
+from the five-frame application timelapse acceptance. The public Jobs API still
+supports `eon.image_processing.create_cutout` only; no public render_timelapse or
+BE-03 frontend completion is claimed. Earlier section 16 failures remain historical.
+
+### Recovery and lifecycle
+
+Verified branch: `feature/EON-BE-02`. Read AGENTS.md/settings/adapters before recovery.
+Listener/container inspection found PostgreSQL, Redis, MinIO, Observation :8001 and
+Jobs :8004 available, but no listener on :8002. Jobs authentication with the existing
+configured token succeeded: empty payload returned 400 after authentication.
+
+Started an owned Image Processing process on :8002 with the existing .env secrets
+loaded privately into memory and localhost endpoint overrides. No file or existing
+service was reconfigured. The first actual HTTP submission returned 202 and ran on
+the existing worker, but failed with `django.db.utils.OperationalError:
+fe_sendauth: no password supplied` during repository lookup, before FITS acquisition.
+That failed job is `14dafacd-da86-447f-81a4-0353a06e759f`; its evidence is retained
+under `attempt_worker_missing_password/`.
+
+After confirming that worker had no active/reserved/scheduled work, temporarily
+removed its image_processing queue subscription. Started an owned worker using
+`--pool=solo --concurrency=1 -Q image_processing`, correct PostgreSQL credentials,
+Observation :8001 and MinIO :9000. Retried through the public API; Jobs legitimately
+issued a new task ID because the previous idempotent job had failed. No Redis lock,
+result record, database row or stored artifact was manually removed or fabricated.
+
+Both owned API/worker processes were stopped after validation. The original worker's
+queue subscription was restored and acknowledged. An additional owned API used for
+error checks was also stopped. Observation, Jobs and infrastructure containers were
+not restarted. The original worker still requires its own launch environment to
+include PostgreSQL credentials; restoring its subscription does not repair that
+process's environment. Port 8002 is intentionally no longer served by the temporary
+validation process after cleanup. Use the recovery helper for a reproducible test,
+or launch persistent development processes with the same settings.
+
+### Real request, lifecycle and FITS result
+
+| Stage | Result |
+| --- | --- |
+| PostgreSQL SELECT 1, Redis PING | Passed |
+| Observation, Image Processing, Jobs, MinIO health | Passed, all HTTP 200 |
+| eon-science bucket access | Passed |
+| Correct create_cutout worker/queue | Passed: eon-be02-validation worker |
+| Bounded M101/D2 discovery limit=1 and detail | Passed, both HTTP 200 |
+| POST /api/v1/cutouts/ | Passed, HTTP 202 |
+| Jobs -> Celery asynchronous execution | Passed: running -> succeeded; four polls, 240-second bound |
+| Metadata endpoint | Passed, HTTP 200 |
+| FITS download endpoint | Passed, HTTP 200, application/fits |
+| Scientific metadata/content | Passed, actual FITS headers/WCS/finite image and source identity checked |
+| MinIO persistence/retrieval | Passed, identical 4,000,320-byte object |
+| Successful request/response schema validation | Passed; documented error-schema omissions below |
+| Seven safe HTTP error/authentication checks | Passed |
+
+Genuine product:
+`803628b15eeaa57e572cf8598be71893281021f9dfb44b3574d7b0af3e89bd03`.
+Region: RA=210.80227, Dec=54.34895, size=0.1 degrees, SPHEREx-D2. Discovery is a
+fresh bounded endpoint request; neither cache miss nor native TAP success is claimed.
+
+Successful job: `c19f23f7-5c6b-4528-b59f-f5ddcbac871e`.
+Actual cutout: `65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d`.
+Object: `eon-science/cutouts/65c1bfff2cef7949e4173bf988abf732a217e973026a6aa6396ba46406982a5d.fits`.
+Worker logs show receipt and successful completion of that task in 8.327 seconds.
+S3 LastModified is `2026-11-15T03:50:02+00:00`, during this execution.
+
+The real downloaded FITS validates with Astropy and contains IMAGE shape 59x59,
+detector 2, OBSID `2025W19_2B_0346_1`, surface-brightness unit MJy/sr, celestial WCS
+and finite science pixels. FITS DATE-OBS/TIMESYS yield `2025-05-10T17:04:37.741Z`,
+consistent with the original catalogue MJD within one second. FITS DATE is not used
+as observation time. Header OBSID/detector match the discovered artifact filename.
+The requested sky position roundtrips through the real WCS. Position-dependent
+wavelength=1.5064212841578182 um and bandwidth=0.036952739361587945 um match metadata.
+The metadata endpoint's returned scientific dictionary equals an independent read
+of the downloaded FITS. S3 direct retrieval equals the HTTP download byte-for-byte:
+SHA-256 `0143817ceec1a56d8ec85b7f8f5d760e20b3376a7afd73bf637657ff36eb980b`.
+No timestamps, observation IDs or cutout IDs were invented.
+
+### Contracts, errors and limitations
+
+Actual request, 202 response, all status responses and metadata validate against the
+published Image Processing OpenAPI 3.0.3 snapshot. FITS response Content-Type matches
+its application/fits declaration. `result` and `fits` remain generic dictionaries;
+scientific/identity assertions are checked separately. The schema omits observed
+400/404 responses on several operations; these documentation gaps are listed in
+validation.json. The mismatched-region error still mentions TAP although discovery
+may use SIA2. No endpoint or agreed BE-03 manifest contract was changed.
+
+Error checks submitted only deliberately invalid/non-enqueuing payloads:
+missing fields 400; mismatched region 400; unknown job 404; invalid cutout ID 400;
+unknown cutout 404; unauthenticated Jobs 401; matching-token invalid Jobs payload 400.
+No extra valid jobs or FITS acquisitions were needed for these checks. The API's
+broad dependency error message can still mask Observation failures, as earlier
+tracebacks demonstrated. No production correction was needed to pass this run.
+The existing SIP diagnostic is retained; no quality-mask calibration, photometry,
+full-band equivalence or external astrometric accuracy is inferred.
+
+### Executed commands and evidence
+
+From the repository root, existing venv:
+
+```cmd
+.venv\Scripts\python.exe -B -u -m scripts.recover_be02_http
+.venv\Scripts\python.exe -B -u -m scripts.recover_be02_http --isolate-worker
+.venv\Scripts\python.exe -B -u -m scripts.recover_be02_http --error-checks-only
+.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp C:\Users\Angle\AppData\Local\Temp\eon-be02-recovery-tests --tb=short
+.venv\Scripts\python.exe -B -m unittest discover -s tests -p smoke_stdlib.py
+.venv\Scripts\python.exe -B -m ruff check --no-cache scripts/recover_be02_http.py scripts/validate_be02_http.py
+```
+
+Regression: **142 passed, 6 optional integrations skipped**. Five smoke checks and
+focused lint passed. Deterministic tests using synthetic/mocked ports are distinct
+from the actual HTTP/Jobs/Celery/IRSA/S3 evidence above; skipped tests are not passes.
+
+[Current validation](evidence/BE02_http_validation/validation.json),
+[submission](evidence/BE02_http_validation/submission.json),
+[polls](evidence/BE02_http_validation/polls.json),
+[metadata](evidence/BE02_http_validation/metadata.json),
+[successful lifecycle/log summaries](evidence/BE02_http_validation/successful_pipeline_lifecycle.json),
+[error checks](evidence/BE02_http_validation/error_checks.json),
+[S3 metadata](evidence/BE02_http_validation/object_head.json) and
+[commands](evidence/BE02_http_validation/commands.txt) record actual outcomes without
+credentials. Source FITS remains in MinIO; unnecessary local FITS copies were not
+retained. No .env, compose.yaml, Observation, Jobs or production application code was
+changed. No commit, push or merge. Remaining launch configuration is explicit above;
+no human intervention was required to complete this bounded validation.
