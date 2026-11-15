@@ -119,13 +119,28 @@ services:
     environment:
       SERVICE_NAME: image_processing
     command: celery -A eon_common.celery worker -Q image_processing --concurrency=2 --loglevel=INFO
+  spectral_worker:
+    <<: *app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio_setup:
+        condition: service_completed_successfully
+    environment:
+      SERVICE_NAME: spectral
+    command: celery -A eon_common.celery worker -Q spectral --pool=prefork --concurrency=2 --loglevel=INFO
   observation_beat:
     <<: *app
     environment:
       SERVICE_NAME: observation
-    command: celery -A eon_common.celery beat --loglevel=INFO
+    command: celery -A eon_common.celery beat --loglevel=INFO --schedule=/home/eon/beat/celerybeat-schedule
+    volumes:
+      - beatdata:/home/eon/beat
 
 volumes:
   pgdata:
   redisdata:
   miniodata:
+  beatdata:

@@ -154,3 +154,12 @@ COLLECTION=spherex_dr1&POS=circle+127.69444+-39.17760+0.01 returned QUERY_STATUS
 Scientific details, source links, FITS FLAGS/WCS rules and environment limits are
 maintained in AGENTS.md and docs/IRSA_INTEGRATION.md. Do not equate a previous PoC
 success with current IRSA, MinIO or end-to-end service availability.
+
+
+## Compose workers and scheduler
+
+Compose includes Observation (`celery`), Image Processing (`image_processing`) and
+Spectral (`spectral`) workers. Observation Beat stores its unchanged daily schedule
+in a non-root writable persistent beatdata volume. See
+[Celery Compose setup and evidence](docs/CELERY_COMPOSE.md) for targeted startup,
+routing, actual runtime checks and platform limitations.

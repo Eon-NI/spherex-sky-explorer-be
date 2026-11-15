@@ -7,6 +7,6 @@ COPY services ./services
 COPY manage.py ./
 COPY docker/init_s3.py ./docker/init_s3.py
 RUN pip install --no-cache-dir .
-RUN useradd --create-home eon
+RUN useradd --create-home eon && install -d -o eon -g eon /home/eon/beat
 USER eon
 CMD ["gunicorn", "eon_common.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]
