@@ -1,0 +1,22 @@
+{
+  "kind": "Summary of executed diagnostic command outputs; not IRSA server-internal telemetry",
+  "poc_protocol": "Direct GET SIA2; local PoC evidence is not native TAP success",
+  "tap_endpoint": "https://irsa.ipac.caltech.edu/TAP/sync",
+  "native_execution": "Astroquery/PyVO synchronous POST",
+  "probes": [
+    {"request": "GET and POST SELECT TOP 1 table_name FROM TAP_SCHEMA.tables with inherited environment", "result": "HTTP 502 Proxy Error"},
+    {"request": "GET SELECT TOP 1 table_name FROM TAP_SCHEMA.tables, trust_env=false", "result": "HTTP 200", "elapsed_seconds": 0.88},
+    {"request": "POST SELECT TOP 1 table_name FROM TAP_SCHEMA.tables, trust_env=false", "result": "HTTP 200", "elapsed_seconds": 1.03},
+    {"request": "TAP_SCHEMA.columns for artifact/plane fields, trust_env=false", "result": "HTTP 200; expected fields present; time_bounds_lower unit=d, description=Modified Julian Day"},
+    {"request": "Native existing spatial query, limit=1, direct session", "result": "ReadTimeout while awaiting HTTP response, wrapped in DALFormatError", "read_timeout_seconds": 60, "elapsed_seconds": 61.6},
+    {"request": "SELECT TOP 1 time_bounds_lower FROM spherex.plane, direct session", "result": "ReadTimeout", "read_timeout_seconds": 20},
+    {"request": "SELECT TOP 1 uri FROM spherex.artifact, direct session", "result": "ReadTimeout", "read_timeout_seconds": 20},
+    {"request": "TAP async creation with inherited environment, minimum schema query", "result": "HTTP 502; no job Location returned; no identified job was available for cleanup"},
+    {"request": "Direct GET SIA2 DR1 POS=CIRCLE 210.80227 54.34895 0", "result": "HTTP 200; 52 D2 records; t_min/t_max in days"}
+  ],
+  "conclusion": "The API 502 masked upstream transport/read failures. The native SPHEREx TAP data path did not complete within tested bounds; schema availability and valid ADQL do not imply data-query availability. Inherited proxies also affected cheap requests. A specific IRSA server-side SQL/backend fault cannot be established from client evidence.",
+  "native_tap_discovery_verified": false,
+  "sia2_temporal_fallback_verified": true,
+  "http_discovery_detail_verified": true,
+  "be02_end_to_end_tested": false
+}

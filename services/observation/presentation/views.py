@@ -26,6 +26,7 @@ from services.observation.infrastructure.repository import (
     DjangoTemporalObservationRepository,
 )
 from services.observation.infrastructure.tap import IrsaTapCatalog
+from services.observation.infrastructure.temporal import IrsaTemporalCatalog
 from services.observation.presentation.throttling import ObservationRateThrottle
 
 logger = logging.getLogger(__name__)
@@ -124,7 +125,7 @@ class TemporalObservationSerializer(serializers.Serializer):
     product_id = serializers.CharField(help_text="SHA-256 reference for artifact + query geometry/detector/time; not a universal exposure ID.")
     artifact_uri = serializers.CharField()
     cutout_url = serializers.URLField(help_text="IRSA reference only; Observation never downloads FITS.")
-    time_bounds_lower = serializers.FloatField(help_text="Original numeric TAP observation bound used for ordering; epoch/scale not inferred.")
+    time_bounds_lower = serializers.FloatField(help_text="Original observation lower bound in MJD days: native TAP or documented SIA2 UTC fallback. Verify acquisition UTC in FITS.")
     ra_deg = serializers.FloatField()
     dec_deg = serializers.FloatField()
     size_deg = serializers.FloatField()
@@ -185,8 +186,8 @@ class TemporalSearchView(APIView):
 
     @extend_schema(operation_id="observations_temporal_search", parameters=[TemporalSearchSerializer], responses={
         200: TemporalSearchResponseSerializer, **ERRORS,
-        502: OpenApiResponse(response=ErrorSerializer, description="IRSA TAP error, timeout or invalid reference."),
-    }, description="Bounded chronological prefix using TOP/maxrec, possibly incomplete when count reaches limit. Not pagination or full-interval sampling. Date/collection filters are unsupported and rejected.")
+        502: OpenApiResponse(response=ErrorSerializer, description="Native TAP and bounded SIA2 fallback unavailable, or invalid scientific reference."),
+    }, description="Bounded chronological prefix: native TAP TOP/maxrec, or explicit SIA2 point fallback on transport failure. SIA2 t_min is MJD UTC; raw TAP values remain unconverted. Possibly incomplete when count reaches limit. Not pagination or full-interval sampling. Date/collection filters are unsupported and rejected.")
     def get(self, request):
         params = TemporalSearchSerializer(data=request.query_params)
         params.is_valid(raise_exception=True)
@@ -194,7 +195,7 @@ class TemporalSearchView(APIView):
         try:
             repository = DjangoTemporalObservationRepository()
             results = SearchTemporalObservations(
-                IrsaTapCatalog(), repository, TemporalSearchCache(repository)
+                IrsaTemporalCatalog(primary=IrsaTapCatalog(read_timeout=10)), repository, TemporalSearchCache(repository)
             ).execute(query)
         except (DatabaseError, RedisError):
             logger.warning("Observation metadata infrastructure unavailable")
